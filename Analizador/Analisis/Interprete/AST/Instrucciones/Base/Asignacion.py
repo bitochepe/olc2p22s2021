@@ -16,7 +16,7 @@ class Asignacion(NodoAST):
         self.ambito = ambito
 
     def ejecutar(self, entorno:TablaSimbolos) -> Primitivo:
-        
+        c3d = ""
         if(self.valor is None): #si el valor de la expresion no fue especificado, ocurre cuando se usa local o global
             if(self.ambito):
                 aux = entorno.getValorGlobal(self.id)
@@ -42,7 +42,7 @@ class Asignacion(NodoAST):
             exp = self.valor.ejecutar(entorno)
             if(exp.tipo.esError()):
                 TablaSimbolos.insertarError(exp.getValor(),self.fila,self.columna)
-                return None
+                return Primitivo("",Tipo(0),0,"","",c3d)
 
             if(self.ambito):
                 aux = entorno.getValorGlobal(self.id)
@@ -56,7 +56,7 @@ class Asignacion(NodoAST):
                             entorno.insertarVariable(self.id,exp,1)
                         else:
                             TablaSimbolos.insertarError("No es posible asignar valor, se asigno: \""+str(exp.tipo.getNombre())+"\" y se esperaba: \""+str(self.tipo.getNombre())+"\"")
-                            return None
+                            return Primitivo("",Tipo(0),0,"","",c3d)
                 else:
                     if(self.tipo is None):                      
                         entorno.setValorGlobal(self.id,exp,0)
@@ -65,7 +65,7 @@ class Asignacion(NodoAST):
                             entorno.setValorGlobal(self.id,exp,0)
                         else:
                             TablaSimbolos.insertarError("No es posible asignar valor, se asigno: \""+str(exp.tipo.getNombre())+"\" y se esperaba: \""+str(self.tipo.getNombre())+"\"")
-                            return None
+                            return Primitivo("",Tipo(0),0,"","",c3d)
             else:
                 aux = entorno.getValor(self.id)
                 if(aux is None):
@@ -76,7 +76,7 @@ class Asignacion(NodoAST):
                             entorno.insertarVariable(self.id,exp,0)
                         else:
                             TablaSimbolos.insertarError("No es posible asignar valor, se asigno: \""+str(exp.tipo.getNombre())+"\" y se esperaba: \""+str(self.tipo.getNombre())+"\"",self.fila,self.columna)
-                            return None
+                            return Primitivo("",Tipo(0),0,"","",c3d)
                 else:
                     if(aux.tipo == 1):
                         if(self.tipo is None):
@@ -88,7 +88,7 @@ class Asignacion(NodoAST):
                                 entorno.setValor(self.id,exp,1)
                             else:
                                 TablaSimbolos.insertarError("No es posible asignar valor, se asigno: \""+str(exp.tipo.getNombre())+"\" y se esperaba: \""+str(self.tipo.getNombre())+"\"",self.fila,self.columna)          
-                                return None
+                                return Primitivo("",Tipo(0),0,"","",c3d)
                     else:
                         if(self.tipo is None):
                             entorno.setValor(self.id,exp,0)
@@ -97,9 +97,15 @@ class Asignacion(NodoAST):
                                 entorno.setValor(self.id,exp,0)
                             else:
                                 TablaSimbolos.insertarError("No es posible asignar valor, se asigno: \""+str(exp.tipo.getNombre())+"\" y se esperaba: \""+str(self.tipo.getNombre())+"\"",self.fila,self.columna)          
-                                return None
-        TablaSimbolos.insertarSalida(exp.getc3d())
-        return None           
+                                return Primitivo("",Tipo(0),0,"","",c3d)
+        
+        c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";"
+        for x in TablaSimbolos.listavars:
+            if(x == self.id):
+                return Primitivo("",Tipo(0),0,"","",c3d)
+        TablaSimbolos.addVar(self.id)
+        return Primitivo("",Tipo(0),0,"","",c3d)
+                  
 
     def getArbol(self) -> str:
         nodo = Nodo('Asignacion')

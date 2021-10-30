@@ -47,11 +47,13 @@ def Analizar2(entrada:str):
     i = Inicial()
     cf = i.ejecutar(ts)
     for x in ltokens:
-        x.ejecutar(ts)
+        TablaSimbolos.insertarSalida(x.ejecutar(ts).getc3d())
         
     raiz = Raiz(lerrores,None,ltokens)
     dot = raiz.getArbol()
     rts = TablaSimbolos.getTS()
+    for y in TablaSimbolos.listavars:
+        TablaSimbolos.decvariables += ", "+str(y)
     res = "package main;\nimport(\"fmt\");\nvar p, h float64;\nvar stack[100000]float64;\nvar heap[100000]float64;\n"+TablaSimbolos.decvariables + " float64;\n"
     res += cf + "func main(){\n"+TablaSimbolos.salidaConsola+"}"
     errS = TablaSimbolos.getErrores()
@@ -66,11 +68,16 @@ def Analizar2(entrada:str):
     res = res.replace("\n\n","\n")
     res = res.replace("\n\n","\n")
     res = res.replace("\n\n","\n")
-    print(res) #linea temporal
     print(errS) #linea temporal
     print(ts.getTablaSimbolos()) #linea temporal
+
+    #linea teporales
+    f = open("C:\\Users\\bitochepe\\Desktop\\olc2p2\\olc2p22s2021\\Analizador\\salida.txt", "w")
+    f.write(res)
+    f.close()
+
     return {'dot' : dot, 'rts' : rts, 'res' : res, 'estado':'true', 'errS':errS}
 
-f = open("./entrada.txt", "r")
+f = open("C:\\Users\\bitochepe\\Desktop\\olc2p2\\olc2p22s2021\\Analizador\\entrada.txt", "r")
 input = f.read()
 Analizar2(input)

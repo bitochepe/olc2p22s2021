@@ -1,4 +1,6 @@
+from os import times
 from typing import List
+from Analisis.Interprete.Primitivos.Tipo import Tipo
 from Analisis.Interprete.AST.NodoAST import NodoAST
 from Analisis.Interprete.Primitivos.Primitivo import Primitivo
 from Analisis.Interprete.AST.Nodo import Nodo
@@ -9,13 +11,20 @@ class Cuerpo(NodoAST):
         self.instrucciones = instrucciones
 
     def ejecutar(self, entorno) -> Primitivo:
+        c3d = ""
         for x in self.instrucciones:
             if(x is not None):
                 aux = x.ejecutar(entorno)
-                if(aux!=None):
-                    return aux
+                c3d += aux.getc3d() +"\n"
+
+                if(aux.tipo.esReturn):
+                    pass
+                elif(aux.tipo.esContinue()):
+                    pass
+                elif(aux.tipo.esBreak()):
+                    pass
             
-        return None
+        return Primitivo("",Tipo(0),0,"","",c3d)
     
     def getArbol(self) -> str:
         nodo = Nodo("Cuerpo")

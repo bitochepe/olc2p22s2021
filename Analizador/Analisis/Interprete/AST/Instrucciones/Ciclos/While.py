@@ -14,6 +14,7 @@ class While(NodoAST):
 
     def ejecutar(self, entorno: TablaSimbolos) -> Primitivo:
         
+        c3d = ""
         exp = self.exp.ejecutar(entorno)
         if(exp.tipo.esError()):
             TablaSimbolos.insertarError("Error en la expresion while: "+str(exp.getValor()),self.fila,self.columna)

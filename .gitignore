@@ -4,3 +4,5 @@ parsetab.py
 ./ply
 entrada.txt
 pruebas.jl
+entrada.txt
+salida.txt

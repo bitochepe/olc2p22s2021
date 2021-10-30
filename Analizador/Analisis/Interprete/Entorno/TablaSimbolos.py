@@ -18,7 +18,7 @@ class TablaSimbolos:
     llamadas = []
     etiqActual = 0
     tempActual = 0
-    
+    listavars = []
 
     def __init__(self) -> None:
         self.listaEntornos = [Entorno]
@@ -170,6 +170,11 @@ class TablaSimbolos:
         TablaSimbolos.llamadas = []
         TablaSimbolos.etiqActual = 0
         TablaSimbolos.tempActual = 0
+        TablaSimbolos.listavars = []
+    
+    @staticmethod
+    def addVar(var):
+        TablaSimbolos.listavars.append(var)
 
     @staticmethod
     def printBoolean(valor):

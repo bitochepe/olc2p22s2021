@@ -6,6 +6,7 @@ from Analisis.Interprete.Entorno.TablaSimbolos import TablaSimbolos
 from Analisis.Interprete.AST.NodoAST import NodoAST
 from Analisis.Interprete.Primitivos.Primitivo import Primitivo
 from Analisis.Interprete.AST.Nodo import Nodo
+from Analisis.Interprete.Primitivos.Tipo import Tipo
 
 class Print(NodoAST):
 
@@ -16,44 +17,44 @@ class Print(NodoAST):
         self.salto = salto
 
     def ejecutar(self, entorno:TablaSimbolos) -> Primitivo:
+        c3d = ""
         for x in self.exp:
             expRes = x.ejecutar(entorno)
             if(expRes.tipo.esBool()):
                 etiqSalida = TablaSimbolos.getNewEtiq()
-                TablaSimbolos.insertarSalida(expRes.getc3d())
-                if(len(expRes.getEV())>0): TablaSimbolos.insertarSalida(expRes.getEV()+":")
-                TablaSimbolos.printBoolean(1)
-                TablaSimbolos.insertarSalida("goto "+etiqSalida+";")
-                if(len(expRes.getEF())>0): TablaSimbolos.insertarSalida(expRes.getEF()+":")
-                TablaSimbolos.printBoolean(0)
-                TablaSimbolos.insertarSalida(etiqSalida+":")
+                c3d += expRes.getc3d()
+                if(len(expRes.getEV())>0): c3d += expRes.getEV()+":"
+                c3d += TablaSimbolos.printBoolean(1)
+                c3d += "goto "+etiqSalida+";"
+                if(len(expRes.getEF())>0): c3d += expRes.getEF()+":"
+                c3d += TablaSimbolos.printBoolean(0)
+                c3d += etiqSalida+":"
 
             elif(expRes.tipo.esFloat()):
-                TablaSimbolos.insertarSalida(expRes.getc3d())
-                TablaSimbolos.insertarSalida("fmt.Printf(\"%f\", "+expRes.getValor()+");")
+                c3d += expRes.getc3d()
+                c3d += "fmt.Printf(\"%f\", "+expRes.getValor()+");"
 
             elif(expRes.tipo.esChar()):
-                TablaSimbolos.insertarSalida(expRes.getc3d())
-                TablaSimbolos.insertarSalida("fmt.Printf(\"%c\", "+expRes.getValor()+");")
+                c3d += expRes.getc3d()
+                c3d += "fmt.Printf(\"%c\", "+expRes.getValor()+");"
 
             elif(expRes.tipo.esInt()):
-                TablaSimbolos.insertarSalida(expRes.getc3d())
-                TablaSimbolos.insertarSalida("fmt.Printf(\"%d\", int("+expRes.getValor()+"));")
+                c3d += expRes.getc3d()
+                c3d += "fmt.Printf(\"%d\", int("+expRes.getValor()+"));"
 
             elif(expRes.tipo.esString()):
-                TablaSimbolos.insertarSalida(expRes.getc3d())
+                c3d += expRes.getc3d()
                 t = TablaSimbolos.getNewTemp()
                 t2 = TablaSimbolos.getNewTemp()
-                codigo = t+" = p + 1;\n"+t2+" = stack[int("+t+")];\n"+"stack[int("+t+")] = "+expRes.getValor()+";\nprintString();\n"+"stack[int("+t+")] = "+t2
-                TablaSimbolos.insertarSalida(codigo)
+                codigo = t+" = p + 1;\n"+t2+" = stack[int("+t+")];\n"+"stack[int("+t+")] = "+expRes.getValor()+";\nprintString();\n"+"stack[int("+t+")] = "+t2+";"
+                c3d += codigo
 
             elif(expRes.tipo.esBreak() or expRes.tipo.esContinue() or expRes.tipo.esNull()):
                 #nuevo error semantico
                 TablaSimbolos.insertarError("Sentencia break o continue dentro de print no admitida",self.fila,self.columna)
-    
+
             elif(expRes.tipo.esReturn()):
-                TablaSimbolos.insertarSalida(expRes.getc3d())
-                TablaSimbolos.insertarSalida(str(expRes.getValor().getValor()))
+                pass
 
             elif(expRes.tipo.esNull()):
                 TablaSimbolos.insertarError("El valor de la variable es NUll",self.fila,self.columna)
@@ -61,8 +62,8 @@ class Print(NodoAST):
                 #error semantico
                 TablaSimbolos.insertarError(expRes.getValor(),self.fila,self.columna)
                 
-        if(self.salto):TablaSimbolos.insertarSalida("fmt.Printf(\"%c\", 10);\n")         
-        return None
+        if(self.salto): c3d += "fmt.Printf(\"%c\", 10);\n"      
+        return Primitivo("",Tipo(0),0,"","",c3d)
 
     def getArbol(self):
         nodo = Nodo("Print")
