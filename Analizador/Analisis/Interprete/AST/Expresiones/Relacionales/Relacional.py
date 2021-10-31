@@ -27,8 +27,7 @@ class Relacional(NodoAST):
                 return Primitivo("No es posible la operacion relacional entre tipos: "+Tipo.getTipo(hizq.tipo.getInt())+" y "+Tipo.getTipo(hder.tipo.getInt()),Tipo(-1),0,"","")
             elif(tipores == 3):
                 # 0:> 1:< 2:>= 3:<= 4:== 5:!=
-                tmp = TablaSimbolos.getNewTemp()
-                
+
                 if(self.op == 0):
                     return self.generar(hizq,hder," > ")
                 elif(self.op == 1):
@@ -44,7 +43,7 @@ class Relacional(NodoAST):
             else:
                 return Primitivo("Ocurrio un error desconocido",Tipo(-1),0,"","")
         except Exception as e:
-            return Primitivo(str(e),Tipo(-1),0,"","")
+            return Primitivo(str(e),Tipo(-1),0,"","","")
     
     def getArbol(self):
         #0:> 1:< 2:>= 3:<= 4:== 5:!=

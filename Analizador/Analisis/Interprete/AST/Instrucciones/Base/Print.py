@@ -1,6 +1,3 @@
-
-from math import exp
-from re import A
 from typing import List
 from Analisis.Interprete.Entorno.TablaSimbolos import TablaSimbolos
 from Analisis.Interprete.AST.NodoAST import NodoAST
@@ -28,25 +25,25 @@ class Print(NodoAST):
                 c3d += "goto "+etiqSalida+";"
                 if(len(expRes.getEF())>0): c3d += expRes.getEF()+":"
                 c3d += TablaSimbolos.printBoolean(0)
-                c3d += etiqSalida+":"
+                c3d += etiqSalida+":\n"
 
             elif(expRes.tipo.esFloat()):
                 c3d += expRes.getc3d()
-                c3d += "fmt.Printf(\"%f\", "+expRes.getValor()+");"
+                c3d += "fmt.Printf(\"%f\", "+expRes.getValor()+");\n"
 
             elif(expRes.tipo.esChar()):
                 c3d += expRes.getc3d()
-                c3d += "fmt.Printf(\"%c\", "+expRes.getValor()+");"
+                c3d += "fmt.Printf(\"%c\", "+expRes.getValor()+");\n"
 
             elif(expRes.tipo.esInt()):
                 c3d += expRes.getc3d()
-                c3d += "fmt.Printf(\"%d\", int("+expRes.getValor()+"));"
+                c3d += "fmt.Printf(\"%d\", int("+expRes.getValor()+"));\n"
 
             elif(expRes.tipo.esString()):
                 c3d += expRes.getc3d()
                 t = TablaSimbolos.getNewTemp()
                 t2 = TablaSimbolos.getNewTemp()
-                codigo = t+" = p + 1;\n"+t2+" = stack[int("+t+")];\n"+"stack[int("+t+")] = "+expRes.getValor()+";\nprintString();\n"+"stack[int("+t+")] = "+t2+";"
+                codigo = t+" = p + 1;\n"+t2+" = stack[int("+t+")];\n"+"stack[int("+t+")] = "+expRes.getValor()+";\nprintString();\n"+"stack[int("+t+")] = "+t2+";\n"
                 c3d += codigo
 
             elif(expRes.tipo.esBreak() or expRes.tipo.esContinue() or expRes.tipo.esNull()):

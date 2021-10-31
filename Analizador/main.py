@@ -3,9 +3,6 @@ from Analisis.Raiz import Raiz
 from Analisis.Interprete.AST.Instrucciones.Base.Inicial import Inicial
 import Analisis.gramatica as gramatica
 
-#imports temporales de prueba:
-
-
 def Analizar(entrada:str):
     rs = gramatica.parse(entrada+' ')
     ltokens = rs.get('tokens')
@@ -43,7 +40,7 @@ def Analizar2(entrada:str):
     lerrores = rs.get('errores')
 
     ts = TablaSimbolos()
-    ts.insertarEntorno("global",0,"void")
+    ts.insertarEntorno("global","void")
     i = Inicial()
     cf = i.ejecutar(ts)
     for x in ltokens:

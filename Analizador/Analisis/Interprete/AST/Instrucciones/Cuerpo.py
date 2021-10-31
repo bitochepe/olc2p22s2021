@@ -17,7 +17,7 @@ class Cuerpo(NodoAST):
                 aux = x.ejecutar(entorno)
                 c3d += aux.getc3d() +"\n"
 
-                if(aux.tipo.esReturn):
+                if(aux.tipo.esReturn()):
                     pass
                 elif(aux.tipo.esContinue()):
                     pass

@@ -275,24 +275,24 @@ def p_DECLARACION(t):
     
     if(t.slice[1].type == 'identificador'):
         if(t.slice[4].type == 'pyc'):
-            t[0] = Asignacion(t[1],t[3],None,False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
+            t[0] = Asignacion(t[1],t[3],None,False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),False)
         elif(t.slice[4].type == 'dospuntos'):
-            t[0] = Asignacion(t[1],t[3],t[6],False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
+            t[0] = Asignacion(t[1],t[3],t[6],False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),False)
     elif(t.slice[1].type == 'Rlocal'):
         if(t.slice[3].type == 'pyc'):
-            t[0] = Asignacion(t[2],None,None,False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
+            t[0] = Asignacion(t[2],None,None,False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),True)
         elif(t.slice[5].type == 'dospuntos'):
-            t[0] = Asignacion(t[2],t[4],t[7],False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
+            t[0] = Asignacion(t[2],t[4],t[7],False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),True)
         elif(t.slice[5].type == 'pyc'):
-            t[0] = Asignacion(t[2],t[4],None,False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
+            t[0] = Asignacion(t[2],t[4],None,False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),True)
         
     elif(t.slice[1].type == 'Rglobal'):
         if(t.slice[3].type == 'pyc'):
-            t[0] = Asignacion(t[2],None,None,True,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
+            t[0] = Asignacion(t[2],None,None,True,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),True)
         elif(t.slice[5].type == 'dospuntos'):
-            t[0] = Asignacion(t[2],t[4],t[7],True,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
+            t[0] = Asignacion(t[2],t[4],t[7],True,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),True)
         elif(t.slice[5].type == 'pyc'):
-            t[0] = Asignacion(t[2],t[4],None,True,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
+            t[0] = Asignacion(t[2],t[4],None,True,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),True)
 
 def p_TIPO(t):
     '''

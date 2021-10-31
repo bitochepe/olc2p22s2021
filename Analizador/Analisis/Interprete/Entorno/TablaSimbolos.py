@@ -24,8 +24,8 @@ class TablaSimbolos:
         self.listaEntornos = [Entorno]
         self.listaMetodos = {}
 
-    def insertarEntorno(self,nombre:str,tam,tipo):
-        nuevo = Entorno(nombre,tam,tipo)
+    def insertarEntorno(self,nombre:str,tipo):
+        nuevo = Entorno(nombre,tipo)
         self.listaEntornos.insert(0,nuevo)
 
     def insertarEntornoE(self,entorno):
@@ -34,6 +34,12 @@ class TablaSimbolos:
     def eliminarEntorno(self):
         return self.listaEntornos.pop(0)
     
+    def getEtornoActual(self)->Entorno:
+        return self.listaEntornos[0]
+
+    def getEtornoGlobal(self)->Entorno:
+        return self.listaEntornos[len(self.listaEntornos-2)]
+
     def insertarVariable(self,nombre:str, valor:Primitivo,tipo:int):
         if(self.listaEntornos[0].getVariable(nombre) is not None):
             return False
@@ -51,6 +57,29 @@ class TablaSimbolos:
                 return self.listaEntornos[i].getVariable(nombre)
             else:
                 i = i+1
+        return None
+
+    def getPtrLess(self,nombre:str) -> Simbolo:
+        n = len(self.listaEntornos)-1
+        i = 0
+        s = 0
+
+        if(self.listaEntornos[i].getVariable(nombre) is not None):
+            return s
+        i = i + 1
+
+        while(i<n):
+            if(self.listaEntornos[i].getVariable(nombre) is not None):
+                s = s + self.listaEntornos[i].getTam()
+                return s
+            else:
+                s = s + self.listaEntornos[i].getTam()
+                i = i+1
+        return s
+
+    def getValorLocal(self,nombre:str) -> Simbolo:     
+        if(self.listaEntornos[0].getVariable(nombre) is not None):
+            return self.listaEntornos[0].getVariable(nombre)
         return None
 
     def setValor(self,nombre:str,valor:Primitivo,tipo:int):
@@ -93,7 +122,7 @@ class TablaSimbolos:
         return None
 
     def getTablaSimbolos(self):
-        rep = "<table class=\"table table-hover\"><tr><td>Nombre</td><td>Tipo</td><td>Ambito</td><td>Rol</td><td>Posicion</td><td>Tamaño</td></tr>"   
+        rep = '<table class="table table-hover" style="cellpadding="0" cellspacing="0" width="80%""><tr style="font-weight: bold; background: lightblue;"><td>Nombre</td><td>Tipo</td><td>Ambito</td><td>Rol</td><td>Posicion</td><td>Tamaño</td></tr>'  
         i = 0
         n = len(self.listaEntornos)-2
         while(n>=i):
@@ -115,12 +144,12 @@ class TablaSimbolos:
         return len(TablaSimbolos.llamadas) > 0
 
     @staticmethod
-    def insertarCiclo(id:str):
+    def insertarCiclo(etiqueta:str):
         TablaSimbolos.display.append(id)
 
     @staticmethod
     def sacarCiclo():
-        TablaSimbolos.display.pop()
+        return TablaSimbolos.display.pop()
 
     @staticmethod
     def huboCiclo():
@@ -146,7 +175,7 @@ class TablaSimbolos:
         res = ""
         for x in TablaSimbolos.repTS:
             res += x.getFilaReporte()
-        res = "<table class=\"table table-hover\"><tr><td>Nombre</td><td>Ambito</td><td>Fila</td><td>Columna</td></tr>"+res+"</table>"
+        res = '<table class="table table-hover" style="cellpadding="0" cellspacing="0" width="80%""><tr style="font-weight: bold; background: lightblue;"><td>Nombre</td><td>Ambito</td><td>Fila</td><td>Columna</td></tr>"+res+"</table>'
         return res 
     
     @staticmethod

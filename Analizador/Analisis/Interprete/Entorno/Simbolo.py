@@ -1,7 +1,4 @@
-from types import resolve_bases
-from Analisis.Interprete.Primitivos.Tipo import Tipo
 from Analisis.Interprete.Primitivos.Primitivo import Primitivo
-
 
 class Simbolo:
 
