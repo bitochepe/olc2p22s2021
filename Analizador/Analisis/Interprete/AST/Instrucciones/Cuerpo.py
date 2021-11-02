@@ -16,14 +16,6 @@ class Cuerpo(NodoAST):
             if(x is not None):
                 aux = x.ejecutar(entorno)
                 c3d += aux.getc3d() +"\n"
-
-                if(aux.tipo.esReturn()):
-                    pass
-                elif(aux.tipo.esContinue()):
-                    pass
-                elif(aux.tipo.esBreak()):
-                    pass
-            
         return Primitivo("",Tipo(0),0,"","",c3d)
     
     def getArbol(self) -> str:

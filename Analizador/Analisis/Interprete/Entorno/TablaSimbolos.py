@@ -144,8 +144,8 @@ class TablaSimbolos:
         return len(TablaSimbolos.llamadas) > 0
 
     @staticmethod
-    def insertarCiclo(etiqueta:str):
-        TablaSimbolos.display.append(id)
+    def insertarCiclo(Linicio:str,Lsalida):
+        TablaSimbolos.display.append([Linicio,Lsalida])
 
     @staticmethod
     def sacarCiclo():
@@ -208,6 +208,6 @@ class TablaSimbolos:
     @staticmethod
     def printBoolean(valor):
         if(valor==0):
-            TablaSimbolos.insertarSalida("fmt.Printf(\"%c\", int(70));\nfmt.Printf(\"%c\", int(65));\nfmt.Printf(\"%c\", int(76));\nfmt.Printf(\"%c\", int(83));\nfmt.Printf(\"%c\", int(69));")
+            return "fmt.Printf(\"%c\", int(70));\nfmt.Printf(\"%c\", int(65));\nfmt.Printf(\"%c\", int(76));\nfmt.Printf(\"%c\", int(83));\nfmt.Printf(\"%c\", int(69));"
         else:
-            TablaSimbolos.insertarSalida("fmt.Printf(\"%c\", int(84));\nfmt.Printf(\"%c\", int(82));\nfmt.Printf(\"%c\", int(85));\nfmt.Printf(\"%c\", int(69));")
+            return "fmt.Printf(\"%c\", int(84));\nfmt.Printf(\"%c\", int(82));\nfmt.Printf(\"%c\", int(85));\nfmt.Printf(\"%c\", int(69));"

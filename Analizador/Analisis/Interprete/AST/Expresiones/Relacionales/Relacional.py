@@ -27,19 +27,33 @@ class Relacional(NodoAST):
                 return Primitivo("No es posible la operacion relacional entre tipos: "+Tipo.getTipo(hizq.tipo.getInt())+" y "+Tipo.getTipo(hder.tipo.getInt()),Tipo(-1),0,"","")
             elif(tipores == 3):
                 # 0:> 1:< 2:>= 3:<= 4:== 5:!=
-
-                if(self.op == 0):
-                    return self.generar(hizq,hder," > ")
-                elif(self.op == 1):
-                    return self.generar(hizq,hder," < ")
-                elif(self.op == 2):
-                    return self.generar(hizq,hder," >= ")
-                elif(self.op == 3):
-                    return self.generar(hizq,hder," <= ")
-                elif(self.op == 4):
-                    return self.generar(hizq,hder," == ")
-                elif(self.op == 5):
-                    return self.generar(hizq,hder," != ")
+                if(hizq.tipo.esString() and hder.tipo.esString()):
+                    if(self.op == 0):
+                        return self.generarSTR(hizq,hder," > ")
+                    elif(self.op == 1):
+                        return self.generarSTR(hizq,hder," < ")
+                    elif(self.op == 2):
+                        return self.generarSTR(hizq,hder," >= ")
+                    elif(self.op == 3):
+                        return self.generarSTR(hizq,hder," <= ")
+                    elif(self.op == 4):
+                        return self.generarSTR(hizq,hder," == ")
+                    elif(self.op == 5):
+                        return self.generarSTR(hizq,hder," != ")
+                    pass
+                else:
+                    if(self.op == 0):
+                        return self.generar(hizq,hder," > ")
+                    elif(self.op == 1):
+                        return self.generar(hizq,hder," < ")
+                    elif(self.op == 2):
+                        return self.generar(hizq,hder," >= ")
+                    elif(self.op == 3):
+                        return self.generar(hizq,hder," <= ")
+                    elif(self.op == 4):
+                        return self.generar(hizq,hder," == ")
+                    elif(self.op == 5):
+                        return self.generar(hizq,hder," != ")
             else:
                 return Primitivo("Ocurrio un error desconocido",Tipo(-1),0,"","")
         except Exception as e:
@@ -71,8 +85,7 @@ class Relacional(NodoAST):
         EtiqF = TablaSimbolos.getNewEtiq()
         c3d = i.getc3d() +"\n" + d.getc3d() +"\n"
         c3d += "if "+i.getValor()+o+d.getValor()+" {goto "+EtiqV+";}\ngoto "+EtiqF+";"
-        return Primitivo("",Tipo(3),0,EtiqV,EtiqF,c3d)
+        return Primitivo("0",Tipo(3),0,EtiqV,EtiqF,c3d)
 
-        #etiqV = TablaSimbolos.getNewEtiq()
-        #valor = TablaSimbolos.getNewTemp()
-        #return Primitivo(valor,Tipo(3),0,etiqV,"",valor+" = 1;\nif "+i+o+d+"{goto "+etiqV+";}\n"+valor+" = 0;\n"+etiqV)
+    def generarSTR(self,i:Primitivo,d:Primitivo):
+        pass

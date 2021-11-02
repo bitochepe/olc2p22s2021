@@ -9,6 +9,8 @@ class Entorno:
 
     def insertarVariable(self,nombre:str,variable:Simbolo):
         if(self.tabla.get(nombre) is not None):
+            aux:Simbolo = self.tabla.get(nombre)
+            variable.pos = aux.pos
             variable.ambito = self.nombre
             self.tabla[nombre] = variable
         else:

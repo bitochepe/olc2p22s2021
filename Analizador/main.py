@@ -65,7 +65,9 @@ def Analizar2(entrada:str):
     res = res.replace("\n\n","\n")
     res = res.replace("\n\n","\n")
     res = res.replace("\n\n","\n")
+    print("===================ERROREs==========================")
     print(errS) #linea temporal
+    print("===================TABLA SIMBOLOS==========================")
     print(ts.getTablaSimbolos()) #linea temporal
 
     #linea teporales

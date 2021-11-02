@@ -35,7 +35,7 @@ class Multiplicacion(NodoAST):
                 return Primitivo(tmp,Tipo(2),0,"","",c3d)
             elif(tipores == 5):
                 #operaciones con strings 3D
-                return self.generar(self,hizq,hder)
+                return self.generar(hizq,hder)
             else:
                 return Primitivo("Ocurrio un error desconocido",Tipo(-1),0,"","","")
         except Exception as e:
@@ -48,5 +48,29 @@ class Multiplicacion(NodoAST):
         nodo.addHoja(self.expDer.getArbol())
         return nodo
 
-    def generar(self,hi,hd):
-        pass
+    def generar(self,hi:Primitivo,hd:Primitivo):
+        t1 = TablaSimbolos.getNewTemp() #posicion heap cadena 1
+        t2 = TablaSimbolos.getNewTemp() #posicion heap cadena 2
+        t3 = TablaSimbolos.getNewTemp() #iterador
+        t4 = TablaSimbolos.getNewTemp() #posicion heap cadena nueva
+        etq = TablaSimbolos.getNewEtiq() #etiqueta inicio loop cadena 1
+        etqs = TablaSimbolos.getNewEtiq() #etiqueta salida loop cadena 1
+        etq2 = TablaSimbolos.getNewEtiq() #etiqueta inicio loop cadena 2
+        etqs2 = TablaSimbolos.getNewEtiq() #etiqueta salida loop cadena 2
+
+        c3d = hi.getc3d() +"\n"+ hd.getc3d()+"\n"
+        c3d += t4+" = h + 0;\n"
+        c3d += t1 + " = "+hi.getValor()+" + 0;\n"
+        c3d += t2 + " = "+hd.getValor()+" + 0;\n"
+
+        c3d += etq+":\n"+t3+" = heap[int("+t1+")];\n"
+        c3d += "if "+t3+" == -234 {goto "+etqs+";}\nheap[int(h)] = "+t3+";\nh = h + 1;\n"
+        c3d += t1+" = "+t1+" + 1;\ngoto "+etq+";\n"+etqs+":\n"
+
+        c3d += etq2+":\n"+t3+" = heap[int("+t2+")];\n"
+        c3d += "if "+t3+" == -234 {goto "+etqs2+";}\nheap[int(h)] = "+t3+";\nh = h + 1;\n"
+        c3d += t2+" = "+t2+" + 1;\ngoto "+etq2+";\n"+etqs2+":\n"
+
+        c3d += "heap[int(h)] = -234;\nh = h + 1;\n"
+
+        return Primitivo(t4,Tipo(5),0,"","",c3d)

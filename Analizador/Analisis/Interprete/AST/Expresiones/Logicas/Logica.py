@@ -19,7 +19,7 @@ class Logica(NodoAST):
                 if(hizq.tipo.esError()): return hizq
                 if(hizq.tipo.getInt()):
                     if(self.op == 2):
-                        return Primitivo("",Tipo(3),0,hizq.getEF(),hizq.getEV(),hizq.getc3d())
+                        return Primitivo("0",Tipo(3),0,hizq.getEF(),hizq.getEV(),hizq.getc3d())
                     else:
                         return Primitivo("Ocurrio un error desconocido",Tipo(-1),0,"","")
             else:
@@ -44,7 +44,7 @@ class Logica(NodoAST):
                         c3d = hizq.getc3d()+"\n"
                         if(len(hizq.getEF())>0): c3d+=hizq.getEF()+":\n"
                         c3d += hder.getc3d()
-                        return Primitivo("",Tipo(3),0,etiqV,etiqF,c3d)
+                        return Primitivo("0",Tipo(3),0,etiqV,etiqF,c3d)
 
                     elif(self.op == 1):
                         etiqF = ""
@@ -57,7 +57,7 @@ class Logica(NodoAST):
                         c3d = hizq.getc3d()+"\n"
                         if(len(hizq.getEV())>0): c3d+=hizq.getEV()+":\n"
                         c3d += hder.getc3d()
-                        return Primitivo("",Tipo(3),0,etiqV,etiqF,c3d)
+                        return Primitivo("0",Tipo(3),0,etiqV,etiqF,c3d)
                 else:
                     return Primitivo("Ocurrio un error desconocido",Tipo(-1),0,"","")
         except Exception as e:

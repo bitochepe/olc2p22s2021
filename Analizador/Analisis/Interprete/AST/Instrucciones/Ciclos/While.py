@@ -25,7 +25,7 @@ class While(NodoAST):
         elif(exp.tipo.esBool()):
             Linicio = TablaSimbolos.getNewEtiq()
             Lsalida = TablaSimbolos.getNewEtiq()
-            TablaSimbolos.insertarCiclo(Lsalida)
+            TablaSimbolos.insertarCiclo(Linicio,Lsalida)
 
             #Cambio simulado
             actual:Entorno = entorno.getEtornoActual()
@@ -39,11 +39,12 @@ class While(NodoAST):
             c3d += exp.getc3d()+"\n"+exp.getEV()+":\n"
             c3d += resCuerpo.getc3d()
             c3d += "goto "+Linicio+";\n"
-            c3d += exp.getEF()+":\n"
+            c3d += exp.getEF()+":\ngoto "+Lsalida+";\n"
             c3d += Lsalida+":\n"
             entorno.eliminarEntorno()
             #regreso a entorno anterior
             c3d += "p = p - "+str(actual.getTam())+";\n"
+            TablaSimbolos.sacarCiclo()
         else:
             TablaSimbolos.insertarError("Error en el tipo de la expresion while: "+str(exp.tipo.getNombre()),self.fila,self.columna)
 

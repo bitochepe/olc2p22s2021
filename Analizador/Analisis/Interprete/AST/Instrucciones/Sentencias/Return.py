@@ -16,9 +16,9 @@ class Return(NodoAST):
             resExp = self.exp.ejecutar(entorno)
             if(resExp.tipo.esError()):
                 TablaSimbolos.insertarError("Error en sentencia Return: "+str(resExp.getValor()),self.fila,self.columna)
-                return None
+                return Primitivo("",Tipo(0),0,"","","")
             return Primitivo(resExp,Tipo(6),0,"","")
-        return Primitivo(None,Tipo(6),0,"","")
+        return Primitivo("",Tipo(0),0,"","","")
         
 
     def getArbol(self) -> str:

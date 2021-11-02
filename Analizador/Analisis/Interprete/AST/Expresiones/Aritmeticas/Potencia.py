@@ -28,7 +28,7 @@ class Potencia(NodoAST):
             elif(tipores == 2):
                 return self.generar(hizq,hder,2)
             elif(tipores == 5):
-                return self.generarSTR(hizq,hder,5)
+                return self.generarSTR(hizq,hder)
             else:
                 return Primitivo("Ocurrio un error desconocido",Tipo(-1),0,"","","")
         except Exception as e:
@@ -72,5 +72,22 @@ class Potencia(NodoAST):
         #return Primitivo(op1,Tipo(t),0,"","","")
         return Primitivo(op1,Tipo(t),0,"","",c3d)
 
-    def generarSTR(self,hi,hd):
-        pass
+    def generarSTR(self,hi:Primitivo,hd:Primitivo):
+        t0 = TablaSimbolos.getNewTemp() #posicion heap nueva cadena
+        t1 = TablaSimbolos.getNewTemp() #posicion heap cadena
+        t3 = TablaSimbolos.getNewTemp() #iterador del heap
+        t4 = TablaSimbolos.getNewTemp() #iterador del loop
+        etq = TablaSimbolos.getNewEtiq() #inicio loop
+        etqs = TablaSimbolos.getNewEtiq() #salida loop
+
+        c3d = hi.getc3d() +"\n"+ hd.getc3d() +"\n"
+        c3d += t0 + " = h + 0;\n"
+        c3d += t1 + " = "+hi.getValor()+"\n"
+        c3d += t4+ " = "+hd.getValor()+" + 0;\n"
+        c3d += etq+":\n"+t3+" = heap[int("+t1+")];\n"
+        c3d += "if "+t3+" == -234 {goto "+etqs+";}\nheap[int(h)] = "+t3+";\nh = h + 1;\n"
+        c3d += t1+" = "+t1+" + 1;\ngoto "+etq+";\n"+etqs+":\n"
+        c3d += t4 + " = "+t4+" - 1;\nif("+t4+" > 0){\n"
+        c3d += t1 + " = "+hi.getValor()+"\ngoto "+etq+";\n}\n"
+        c3d += "heap[int(h)] = -234;\nh = h + 1;\n"
+        return Primitivo(t0,Tipo(5),0,"","",c3d)

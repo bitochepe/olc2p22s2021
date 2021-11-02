@@ -396,7 +396,7 @@ def p_E(t):
     elif(t.slice[1].type == 'menos'):
         t[0] = Unario(t[2],False)
     elif(t.slice[1].type == 'mas'):
-        t[0] = Relacional(t[2],True)
+        t[0] = Unario(t[2],True)
     elif(t.slice[2].type == 'mas'):
         t[0] = Suma(t[3],t[1])
     elif(t.slice[2].type == 'menos'):

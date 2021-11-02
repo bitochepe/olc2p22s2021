@@ -32,8 +32,13 @@ class Asignacion(NodoAST):
                     c3d += "stack[int("+str(aux.getPos())+")] = 0;\n"
                     if(aux2 is not None):
                         t = TablaSimbolos.getNewTemp()
+                        bajar = entorno.getPtrLess(self.id)
+                        if(bajar>0):
+                            c3d +="p = p - "+str(bajar)+";\n"
                         c3d += t+" = p + "+str(aux2.getPos())
                         c3d += ";\nstack[int("+t+")] = 0;\n"
+                        if(bajar>0):
+                            c3d +="p = p + "+str(bajar)+";\n" 
 
             else: #Se declaro la variable en ambito local 
                 if(self.palabra):
@@ -41,8 +46,13 @@ class Asignacion(NodoAST):
                     if(aux is None): #No existe la variable
                         entorno.insertarVariable(self.id,Primitivo("",Tipo(0),0,"","",""),0)
                         t = TablaSimbolos.getNewTemp()
+                        bajar = entorno.getPtrLess(self.id)
+                        if(bajar>0):
+                            c3d +="p = p - "+str(bajar)+";\n"
                         c3d += t+" = p + "+str(entorno.getEtornoActual().getTam()-1)
                         c3d += ";\nstack[int("+t+")] = 0;\n"
+                        if(bajar>0):
+                            c3d +="p = p + "+str(bajar)+";\n" 
                 
                     else: #La variable ya existia
                         TablaSimbolos.insertarError("No es declarar dos veces la misma variable: \""+str(self.id)+"\"")
@@ -52,8 +62,13 @@ class Asignacion(NodoAST):
                     if(aux is None): #No existe la variable
                         entorno.insertarVariable(self.id,Primitivo("",Tipo(0),0,"","",""),0)
                         t = TablaSimbolos.getNewTemp()
+                        bajar = entorno.getPtrLess(self.id)
+                        if(bajar>0):
+                            c3d +="p = p - "+str(bajar)+";\n"
                         c3d += t+" = p + "+str(entorno.getEtornoActual().getTam()-1)
                         c3d += ";\nstack[int("+t+")] = 0;\n"
+                        if(bajar>0):
+                            c3d +="p = p + "+str(bajar)+";\n" 
                 
                     else: #La variable ya existia
                         if(aux.tipo == 1): #se declaro la varible en un entorno global pero hace referencia a una global
@@ -63,14 +78,24 @@ class Asignacion(NodoAST):
                             aux2 = entorno.getValorGlobal(self.id)
                             if(aux2 is not None):
                                 t = TablaSimbolos.getNewTemp()
+                                bajar = entorno.getPtrLess(self.id)
+                                if(bajar>0):
+                                    c3d +="p = p - "+str(bajar)+";\n"
                                 c3d += t+" = p + "+str(aux2.getPos())+";\n"
                                 c3d += ";\nstack[int("+t+")] = 0;\n" 
+                                if(bajar>0):
+                                    c3d +="p = p + "+str(bajar)+";\n" 
 
                         else:   #en ambito local
                             entorno.setValor(self.id,Primitivo("",Tipo(0),0,"","",""),0)
                             t = TablaSimbolos.getNewTemp()
+                            bajar = entorno.getPtrLess(self.id)
+                            if(bajar>0):
+                                c3d +="p = p - "+str(bajar)+";\n"
                             c3d += t+" = p + "+str(aux.getPos())
                             c3d += ";\nstack[int("+t+")] = 0;\n"
+                            if(bajar>0):
+                                c3d +="p = p + "+str(bajar)+";\n" 
                  
         
         #el valor de la expresion fue especificado
@@ -89,8 +114,13 @@ class Asignacion(NodoAST):
                         c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                         c3d += "stack[int("+str(entorno.getEtornoGlobal().getTam()-1)+")] = "+exp.getValor()+";\n"
                         t = TablaSimbolos.getNewTemp()
+                        bajar = entorno.getPtrLess(self.id)
+                        if(bajar>0):
+                            c3d +="p = p - "+str(bajar)+";\n"
                         c3d += t+" = p + "+str(entorno.getEtornoActual().getTam()-1)
                         c3d += ";\nstack[int("+t+")] = "+exp.getValor()+";\n"
+                        if(bajar>0):
+                            c3d +="p = p + "+str(bajar)+";\n" 
 
                     else: #el tipo fue declarado
                         if(self.tipo.getInt() == exp.tipo.getInt()):
@@ -99,8 +129,13 @@ class Asignacion(NodoAST):
                             c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                             c3d += "stack[int("+str(entorno.getEtornoGlobal().getTam()-1)+")] = "+exp.getValor()+";\n"
                             t = TablaSimbolos.getNewTemp()
+                            bajar = entorno.getPtrLess(self.id)
+                            if(bajar>0):
+                                c3d +="p = p - "+str(bajar)+";\n"
                             c3d += t+" = p + "+str(entorno.getEtornoActual().getTam()-1)
                             c3d += ";\nstack[int("+t+")] = "+exp.getValor()+";\n"
+                            if(bajar>0):
+                                c3d +="p = p + "+str(bajar)+";\n" 
 
                         else: #El tipo de la expresion no coincide con el especificado
                             TablaSimbolos.insertarError("No es posible asignar valor, se asigno: \""+str(exp.tipo.getNombre())+"\" y se esperaba: \""+str(self.tipo.getNombre())+"\"")
@@ -129,16 +164,26 @@ class Asignacion(NodoAST):
                             entorno.insertarVariable(self.id,exp,0)
                             c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                             t = TablaSimbolos.getNewTemp()
+                            bajar = entorno.getPtrLess(self.id)
+                            if(bajar>0):
+                                c3d +="p = p - "+str(bajar)+";\n"
                             c3d += t+" = p + "+str(entorno.getEtornoActual().getTam()-1)
                             c3d += ";\nstack[int("+t+")] = "+exp.getValor()+";\n"
+                            if(bajar>0):
+                                c3d +="p = p + "+str(bajar)+";\n" 
                     
                         else: #se especifico tipo
                             if(self.tipo.getInt() == exp.tipo.getInt()):
                                 entorno.insertarVariable(self.id,exp,0)
                                 c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                                 t = TablaSimbolos.getNewTemp()
+                                bajar = entorno.getPtrLess(self.id)
+                                if(bajar>0):
+                                    c3d +="p = p - "+str(bajar)+";\n"
                                 c3d += t+" = p + "+str(entorno.getEtornoActual().getTam()-1)
                                 c3d += ";\nstack[int("+t+")] = "+exp.getValor()+";\n"
+                                if(bajar>0):
+                                    c3d +="p = p + "+str(bajar)+";\n" 
                         
                             else: #los tipos no coinciden
                                 TablaSimbolos.insertarError("No es posible asignar valor, se asigno: \""+str(exp.tipo.getNombre())+"\" y se esperaba: \""+str(self.tipo.getNombre())+"\"",self.fila,self.columna)
@@ -154,16 +199,26 @@ class Asignacion(NodoAST):
                             entorno.insertarVariable(self.id,exp,0)
                             c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                             t = TablaSimbolos.getNewTemp()
+                            bajar = entorno.getPtrLess(self.id)
+                            if(bajar>0):
+                                c3d +="p = p - "+str(bajar)+";\n"
                             c3d += t+" = p + "+str(entorno.getEtornoActual().getTam()-1)
                             c3d += ";\nstack[int("+t+")] = "+exp.getValor()+";\n"
+                            if(bajar>0):
+                                c3d +="p = p + "+str(bajar)+";\n" 
                     
                         else: #se especifico tipo
                             if(self.tipo.getInt() == exp.tipo.getInt()):
                                 entorno.insertarVariable(self.id,exp,0)
                                 c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                                 t = TablaSimbolos.getNewTemp()
+                                bajar = entorno.getPtrLess(self.id)
+                                if(bajar>0):
+                                    c3d +="p = p - "+str(bajar)+";\n"
                                 c3d += t+" = p + "+str(entorno.getEtornoActual().getTam()-1)
                                 c3d += ";\nstack[int("+t+")] = "+exp.getValor()+";\n"
+                                if(bajar>0):
+                                    c3d +="p = p + "+str(bajar)+";\n" 
                         
                             else: #los tipos no coinciden
                                 TablaSimbolos.insertarError("No es posible asignar valor, se asigno: \""+str(exp.tipo.getNombre())+"\" y se esperaba: \""+str(self.tipo.getNombre())+"\"",self.fila,self.columna)
@@ -178,8 +233,13 @@ class Asignacion(NodoAST):
                                 aux2 = entorno.getValorGlobal(self.id)
                                 if(aux2 is not None):
                                     t = TablaSimbolos.getNewTemp()
+                                    bajar = entorno.getPtrLess(self.id)
+                                    if(bajar>0):
+                                        c3d +="p = p - "+str(bajar)+";\n"
                                     c3d += t+" = p + "+str(aux2.getPos())
                                     c3d += ";\nstack[int("+t+")] = "+exp.getValor()+";\n"
+                                    if(bajar>0):
+                                        c3d +="p = p + "+str(bajar)+";\n" 
                     
                             else: #se especifica tipo
                                 if(aux.getTipo() == exp.tipo.getInt()):
@@ -190,8 +250,13 @@ class Asignacion(NodoAST):
                                     aux2 = entorno.getValorGlobal(self.id)
                                     if(aux2 is not None):
                                         t = TablaSimbolos.getNewTemp()
+                                        bajar = entorno.getPtrLess(self.id)
+                                        if(bajar>0):
+                                            c3d +="p = p - "+str(bajar)+";\n"
                                         c3d += t+" = p + "+str(aux2.getPos())
                                         c3d += ";\nstack[int("+t+")] = "+exp.getValor()+";\n"
+                                        if(bajar>0):
+                                            c3d +="p = p + "+str(bajar)+";\n" 
                                 
                                 else: #No coiciden los itpos
                                     TablaSimbolos.insertarError("No es posible asignar valor, se asigno: \""+str(exp.tipo.getNombre())+"\" y se esperaba: \""+str(self.tipo.getNombre())+"\"",self.fila,self.columna)          
@@ -202,16 +267,28 @@ class Asignacion(NodoAST):
                                 entorno.setValor(self.id,exp,0)
                                 c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                                 t = TablaSimbolos.getNewTemp()
+                                bajar = entorno.getPtrLess(self.id)
+                                if(bajar>0):
+                                    c3d +="p = p - "+str(bajar)+";\n"
                                 c3d += t+" = p + "+str(aux.getPos())
                                 c3d += ";\nstack[int("+t+")] = "+exp.getValor()+";\n"
+                                if(bajar>0):
+                                    c3d +="p = p + "+str(bajar)+";\n" 
                             
                             else: #Se especifica tipo
                                 if(aux.getTipo() == exp.tipo.getInt()):
                                     entorno.setValor(self.id,exp,0)
                                     c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                                     t = TablaSimbolos.getNewTemp()
+
+                                    bajar = entorno.getPtrLess(self.id)
+                                    if(bajar>0):
+                                        c3d +="p = p - "+str(bajar)+";\n"
                                     c3d += t+" = p + "+str(aux.getPos())
                                     c3d += ";\nstack[int("+t+")] = "+exp.getValor()+";\n"
+                                    if(bajar>0):
+                                        c3d +="p = p + "+str(bajar)+";\n"                 
+                                        
 
                                 else:
                                     TablaSimbolos.insertarError("No es posible asignar valor, se asigno: \""+str(exp.tipo.getNombre())+"\" y se esperaba: \""+str(self.tipo.getNombre())+"\"",self.fila,self.columna)          
@@ -228,10 +305,3 @@ class Asignacion(NodoAST):
         nodo.addHoja(Nodo(self.id))
         nodo.addHoja(self.valor.getArbol())
         return nodo
-
-    def setValor(self,exp,hayExp):
-
-        if(hayExp >0):
-            c3d = exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
-            c3d += "stack[int(p)] = "+exp.getValor()+";\n"
-        return c3d

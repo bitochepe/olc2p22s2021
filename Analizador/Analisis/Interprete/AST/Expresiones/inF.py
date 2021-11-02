@@ -29,7 +29,8 @@ class inF(NodoAST):
         else:
             self.error = True
 
-        return Primitivo([lif.getValor(),lsu.getValor()],Tipo(-2),0,"","")
+        c3d = lif.getc3d() +"\n" +lsu.getc3d()+"\n"
+        return Primitivo([lif,lsu],Tipo(-2),0,"","",c3d)
     
     def getArbol(self) -> str:
         nodo = Nodo("IN")

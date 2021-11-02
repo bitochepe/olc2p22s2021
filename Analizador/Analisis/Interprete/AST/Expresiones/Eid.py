@@ -25,13 +25,13 @@ class Eid(NodoAST):
              bajar = entorno.getPtrLess(self.id)
              if(bajar>0): 
                 c3d += "p = p - "+str(bajar)+";\n"
-                c3d += t1+" = p + "+str(v.getPos())+"\n"
+                c3d += t1+" = p + "+str(v.getPos())+";\n"
                 c3d += t2+" = stack[int("+t1+")];\n"
                 c3d += "p = p + "+str(bajar)+";\n"
              else:   
-                c3d += t1+" = p + "+str(v.getPos())+"\n"
+                c3d += t1+" = p + "+str(v.getPos())+";\n"
                 c3d += t2+" = stack[int("+t1+")];\n"
-             vr = Primitivo(t2,v.getValor().tipo,0,"","",c3d)
+             vr = Primitivo(t2,v.getValor().tipo,0,v.getValor().getEV(),v.getValor().getEF(),c3d)
              return vr
 
         TablaSimbolos.insertarError("No existe la variable "+str(self.id),self.fila,self.columna)
