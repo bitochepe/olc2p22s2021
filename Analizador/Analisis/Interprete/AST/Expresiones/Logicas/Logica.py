@@ -21,7 +21,7 @@ class Logica(NodoAST):
                     if(self.op == 2):
                         return Primitivo("0",Tipo(3),0,hizq.getEF(),hizq.getEV(),hizq.getc3d())
                     else:
-                        return Primitivo("Ocurrio un error desconocido",Tipo(-1),0,"","")
+                        return Primitivo("Ocurrio un error desconocido",Tipo(-1),0,"","","")
             else:
                 hder = self.expDer.ejecutar(entorno)
                 if(hizq.tipo.esError()): return hizq
@@ -30,7 +30,7 @@ class Logica(NodoAST):
                 tipores = Tipo.getTipoResultado(hizq.tipo.getInt(),hder.tipo.getInt(),4)
 
                 if(tipores == -1):
-                    return Primitivo("No es posible la operacion logica entre tipos: "+Tipo.getTipo(hizq.tipo.getInt())+" y "+Tipo.getTipo(hder.tipo.getInt()),Tipo(-1),0,"","")
+                    return Primitivo("No es posible la operacion logica entre tipos: "+Tipo.getTipo(hizq.tipo.getInt())+" y "+Tipo.getTipo(hder.tipo.getInt()),Tipo(-1),0,"","","")
                 elif(tipores == 3):
                     # 0:|| 1:&& 2:! 
                     if(self.op == 0):

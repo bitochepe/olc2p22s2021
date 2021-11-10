@@ -24,7 +24,7 @@ class Relacional(NodoAST):
             tipores = Tipo.getTipoResultado(hizq.tipo.getInt(),hder.tipo.getInt(),3)
 
             if(tipores == -1):
-                return Primitivo("No es posible la operacion relacional entre tipos: "+Tipo.getTipo(hizq.tipo.getInt())+" y "+Tipo.getTipo(hder.tipo.getInt()),Tipo(-1),0,"","")
+                return Primitivo("No es posible la operacion relacional entre tipos: "+Tipo.getTipo(hizq.tipo.getInt())+" y "+Tipo.getTipo(hder.tipo.getInt()),Tipo(-1),0,"","","")
             elif(tipores == 3):
                 # 0:> 1:< 2:>= 3:<= 4:== 5:!=
                 if(hizq.tipo.esString() and hder.tipo.esString()):

@@ -26,6 +26,7 @@ from Analisis.Interprete.AST.Expresiones.inF import inF
 from Analisis.Interprete.AST.Instrucciones.Sentencias.Break import Break
 from Analisis.Interprete.AST.Instrucciones.Sentencias.Continue import Continue
 from Analisis.Interprete.AST.Instrucciones.Sentencias.Return import Return
+from Analisis.Interprete.AST.Instrucciones.Base.Parametro import Parametro
 
 
 #variables globales de utilidad
@@ -215,15 +216,15 @@ def p_DECFUNC(t):
 
 
 def p_LPARF(t):
-    '''LPARF : LPARF coma identificador
-              | identificador
+    '''LPARF : LPARF coma identificador dospuntos dospuntos TIPO
+              | identificador dospuntos dospuntos TIPO
               | empty'''
 
     if(t.slice[1].type == "LPARF"):
-        t[1].append(t[3])
+        t[1].append(Parametro(t[3],t[6]))
         t[0] = t[1]
     elif(t.slice[1].type == 'identificador'):
-        t[0] = [t[1]]
+        t[0] = [Parametro(t[1],t[4])]
     elif(t.slice[1].type == 'empty'):
         t[0] = []
 
@@ -387,6 +388,7 @@ def p_E(t):
           | E or E
           | not E %prec not
           | menos E %prec unaria
+          | mas E %prec unaria
           | PRIMITIVO'''
 
     if(t.slice[1].type == 'PRIMITIVO'):

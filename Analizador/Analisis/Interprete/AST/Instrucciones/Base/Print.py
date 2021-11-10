@@ -22,7 +22,7 @@ class Print(NodoAST):
                 c3d += expRes.getc3d()
                 if(len(expRes.getEV())>0): c3d += expRes.getEV()+":"
                 c3d += TablaSimbolos.printBoolean(1)
-                c3d += "goto "+etiqSalida+";"
+                c3d += "goto "+etiqSalida+";\n"
                 if(len(expRes.getEF())>0): c3d += expRes.getEF()+":"
                 c3d += TablaSimbolos.printBoolean(0)
                 c3d += etiqSalida+":\n"
@@ -33,7 +33,7 @@ class Print(NodoAST):
 
             elif(expRes.tipo.esChar()):
                 c3d += expRes.getc3d()
-                c3d += "fmt.Printf(\"%c\", "+expRes.getValor()+");\n"
+                c3d += "fmt.Printf(\"%c\", int("+expRes.getValor()+"));\n"
 
             elif(expRes.tipo.esInt()):
                 c3d += expRes.getc3d()
@@ -51,7 +51,63 @@ class Print(NodoAST):
                 TablaSimbolos.insertarError("Sentencia break o continue dentro de print no admitida",self.fila,self.columna)
 
             elif(expRes.tipo.esReturn()):
-                pass
+                c3d += expRes.getc3d()
+
+                etqs = TablaSimbolos.getNewEtiq()
+                etqi = TablaSimbolos.getNewEtiq()
+                etqf = TablaSimbolos.getNewEtiq()
+                etqc = TablaSimbolos.getNewEtiq()
+                etqstr = TablaSimbolos.getNewEtiq()
+                etqb = TablaSimbolos.getNewEtiq()
+
+                c3d += "if("+expRes.getValor()[1]+"== 0){goto "+etqs+";}\n"
+                c3d += "if("+expRes.getValor()[1]+"== 1){goto "+etqi+";}\n"
+                c3d += "if("+expRes.getValor()[1]+"== 2){goto "+etqf+";}\n"
+                c3d += "if("+expRes.getValor()[1]+"== 3){goto "+etqc+";}\n"
+                c3d += "if("+expRes.getValor()[1]+"== 4){goto "+etqb+";}\n"
+                c3d += "if("+expRes.getValor()[1]+"== 5){goto "+etqstr+";}\n"
+                c3d += "goto "+etqs+";\n"
+
+                #bool
+                c3d += etqb+":\n"
+                c3d += expRes.getValor()[2].getc3d()+"\n"
+                etiqSalida = TablaSimbolos.getNewEtiq()
+                if(len(expRes.getValor()[2].getEV())>0): c3d += expRes.getValor()[0]+":"
+                c3d += TablaSimbolos.printBoolean(1)
+                c3d += "goto "+etiqSalida+";\n"
+                if(len(expRes.getValor()[2].getEF())>0): c3d += expRes.getValor()[0]+":"
+                c3d += TablaSimbolos.printBoolean(0)
+                c3d += etiqSalida+":\n"
+                c3d += "goto "+etqs+";\n"
+
+                #float
+                c3d += etqf+":\n"
+                c3d += expRes.getValor()[2].getc3d()
+                c3d += "fmt.Printf(\"%f\", "+expRes.getValor()[0]+");\n"
+                c3d += "goto "+etqs+";\n"
+
+                #char
+                c3d += etqc+":\n"
+                c3d += expRes.getValor()[2].getc3d()
+                c3d += "fmt.Printf(\"%c\", int("+expRes.getValor()[0]+"));\n"
+                c3d += "goto "+etqs+";\n"
+
+                #int
+                c3d += etqi+":\n"
+                c3d += expRes.getValor()[2].getc3d()
+                c3d += "fmt.Printf(\"%d\", int("+expRes.getValor()[0]+"));\n"
+                c3d += "goto "+etqs+";\n"
+
+                #string
+                c3d += etqstr+":\n"
+                t = TablaSimbolos.getNewTemp()
+                t2 = TablaSimbolos.getNewTemp()
+                codigo = t+" = p + 1;\n"+t2+" = stack[int("+t+")];\n"+"stack[int("+t+")] = "+expRes.getValor()[0]+";\nprintString();\n"+"stack[int("+t+")] = "+t2+";\n"
+                c3d += codigo
+                c3d += "goto "+etqs+";\n"
+
+                #fin
+                c3d += etqs+":\n"
 
             elif(expRes.tipo.esNull()):
                 TablaSimbolos.insertarError("El valor de la variable es NUll",self.fila,self.columna)

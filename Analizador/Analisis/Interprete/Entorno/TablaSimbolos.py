@@ -19,6 +19,8 @@ class TablaSimbolos:
     etiqActual = 0
     tempActual = 0
     listavars = []
+    codigoFunciones = ""
+    listaTemporales = []
 
     def __init__(self) -> None:
         self.listaEntornos = [Entorno]
@@ -59,7 +61,7 @@ class TablaSimbolos:
                 i = i+1
         return None
 
-    def getPtrLess(self,nombre:str) -> Simbolo:
+    def getPtrLess(self,nombre:str) -> int:
         n = len(self.listaEntornos)-1
         i = 0
         s = 0
@@ -113,8 +115,8 @@ class TablaSimbolos:
             TablaSimbolos.repTS.append(Var(nombre,self.listaEntornos[0].getNombre(),0,0))
             return True
 
-    def insertarFuncion(self,id:str,parametros,cuerpo:Cuerpo):
-        self.listaMetodos[id] = Funcion(id,parametros,cuerpo)
+    def insertarFuncion(self,id:str,parametros,cuerpo:Cuerpo,entorno:Entorno):
+        self.listaMetodos[id] = Funcion(id,parametros,cuerpo,entorno)
 
     def existeFuncion(self,id:str) -> Funcion:
         if(self.listaMetodos.get(id,None) is not None):
@@ -131,13 +133,22 @@ class TablaSimbolos:
         rep += "</table>"
         return rep
 
+    @staticmethod
+    def insertarTemporales(tg,tt):
+        TablaSimbolos.listaTemporales.append([tg,tt])
+    
+    @staticmethod
+    def sacarTemporales():
+        return TablaSimbolos.listaTemporales.pop()
+
     @staticmethod  
     def insertarLlamada(id:str):
         TablaSimbolos.llamadas.append(id)
 
     @staticmethod
     def sacarLlamada():
-        TablaSimbolos.llamadas.pop()
+        if(len(TablaSimbolos.llamadas)>0):
+            return TablaSimbolos.llamadas.pop()
 
     @staticmethod
     def huboLlamada():
@@ -162,6 +173,10 @@ class TablaSimbolos:
     @staticmethod
     def insertarSalida(valor:str):
         TablaSimbolos.salidaConsola += valor+"\n"
+
+    @staticmethod
+    def insertarCodigoFuncion(valor:str):
+        TablaSimbolos.codigoFunciones += valor+"\n"
 
     @staticmethod
     def getErrores():
@@ -200,6 +215,8 @@ class TablaSimbolos:
         TablaSimbolos.etiqActual = 0
         TablaSimbolos.tempActual = 0
         TablaSimbolos.listavars = []
+        TablaSimbolos.codigoFunciones = ""
+        TablaSimbolos.listaTemporales = []
     
     @staticmethod
     def addVar(var):
@@ -208,6 +225,6 @@ class TablaSimbolos:
     @staticmethod
     def printBoolean(valor):
         if(valor==0):
-            return "fmt.Printf(\"%c\", int(70));\nfmt.Printf(\"%c\", int(65));\nfmt.Printf(\"%c\", int(76));\nfmt.Printf(\"%c\", int(83));\nfmt.Printf(\"%c\", int(69));"
+            return "fmt.Printf(\"%c\", int(70));\nfmt.Printf(\"%c\", int(65));\nfmt.Printf(\"%c\", int(76));\nfmt.Printf(\"%c\", int(83));\nfmt.Printf(\"%c\", int(69));\n"
         else:
-            return "fmt.Printf(\"%c\", int(84));\nfmt.Printf(\"%c\", int(82));\nfmt.Printf(\"%c\", int(85));\nfmt.Printf(\"%c\", int(69));"
+            return "fmt.Printf(\"%c\", int(84));\nfmt.Printf(\"%c\", int(82));\nfmt.Printf(\"%c\", int(85));\nfmt.Printf(\"%c\", int(69));\n"

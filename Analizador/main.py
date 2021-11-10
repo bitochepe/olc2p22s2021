@@ -1,3 +1,4 @@
+
 from Analisis.Interprete.Entorno.TablaSimbolos import TablaSimbolos
 from Analisis.Raiz import Raiz
 from Analisis.Interprete.AST.Instrucciones.Base.Inicial import Inicial
@@ -45,7 +46,8 @@ def Analizar2(entrada:str):
     cf = i.ejecutar(ts)
     for x in ltokens:
         TablaSimbolos.insertarSalida(x.ejecutar(ts).getc3d())
-        
+
+    cf += TablaSimbolos.codigoFunciones 
     raiz = Raiz(lerrores,None,ltokens)
     dot = raiz.getArbol()
     rts = TablaSimbolos.getTS()
@@ -57,7 +59,7 @@ def Analizar2(entrada:str):
     
     for x in lerrores:
         errS += x.getFilaReporte()
-    errS = "<table class=\"table table-hover\"><tr><td>Tipo</td><td>Descripcion</td><td>Fila</td><td>Columna</td></tr>"+errS+"</table>"
+    errS = '<table class="table table-hover" style="cellpadding="0" cellspacing="0" width="80%""><tr style="font-weight: bold; background: red;"><td>Tipo</td><td>Descripcion</td><td>Fila</td><td>Columna</td></tr>'+errS+'</table>'
 
     TablaSimbolos.reinicio()
     #borrando saltos de linea de mas

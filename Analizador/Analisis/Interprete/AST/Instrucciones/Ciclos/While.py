@@ -43,7 +43,7 @@ class While(NodoAST):
             c3d += Lsalida+":\n"
             entorno.eliminarEntorno()
             #regreso a entorno anterior
-            c3d += "p = p - "+str(actual.getTam())+";\n"
+            c3d += "p = p - "+str(actual.getTam())+";\n//-------------------------------------\n"
             TablaSimbolos.sacarCiclo()
         else:
             TablaSimbolos.insertarError("Error en el tipo de la expresion while: "+str(exp.tipo.getNombre()),self.fila,self.columna)

@@ -1,9 +1,22 @@
 
-def esMultiplo(numero):
-    if numero % 5==0:
-        return "es multiplo de 5"
-    else:
-        return "no es multiplo de 5"
+llamada = []
 
-num=int(input("Ingrese un numero entero:"))
-print(esMultiplo(num))
+llamada.append("funcionA")
+
+if(len(llamada)>0):
+    aux = llamada.pop()
+else:
+    aux = None
+
+if(len(llamada)>0):
+    aux2 = llamada.pop()
+else:
+    aux2 = None
+if(aux is not None):
+    print(aux)
+else:
+    print("aux es Nada")
+if(aux2 is not None):
+    print(aux2)
+else:
+    print("aux2 es Nada")
