@@ -68,8 +68,8 @@ class Llamada(NodoAST):
                     v = entorno.getValor("$retorno$")
                     
                     entorno.eliminarEntorno()
-                   # return Primitivo([tg,tt,v.getValor()],v.getValor().tipo,0,"","",c3d)
-                    return Primitivo(v.getValor(),v.getValor().tipo,0,"","",c3d)
+                    return Primitivo([tg,tt,v.getValor()],Tipo(6),0,v.getValor().getEV(),v.getValor().getEF(),c3d)
+                    #return Primitivo(v.getValor(),v.getValor().tipo,0,"","",c3d)
 
                 except:
                     return Primitivo('Error en servidor al correr funcion',Tipo(-1),0,"","","")

@@ -25,11 +25,17 @@ class Return(NodoAST):
                 bajar = entorno.getPtrLess("$retorno$")
                 t1 = TablaSimbolos.getNewTemp()
                 if(bajar>0): 
-                    entorno.insertarVariable("$retorno$",resExp,0)
-                    entorno.insertarVariable("$tipo$",resExp,0)
+                    entorno.setValor("$retorno$",resExp,0)
+                    entorno.setValor("$tipo$",resExp,0)
                     v = entorno.getValor("$retorno$")
                     
-                    c3d = resExp.getc3d()+";\n"
+                    if(resExp.tipo.esBool()):
+                        c3d = resExp.getc3d()+";\n"
+                        if(len(resExp.getEV())>0):c3d+=resExp.getEV()+":"
+                        if(len(resExp.getEF())>0):c3d+=resExp.getEF()+":"
+                        c3d+="\n"
+                    else:
+                        c3d = resExp.getc3d()+";\n"
                     c3d += "p = p - "+str(bajar)+";\n"
                     c3d += t1+" = p + "+str(v.getPos())+";\n"
                     c3d += "stack[int("+t1+")] = "+resExp.getValor()+";\n"    
@@ -38,18 +44,24 @@ class Return(NodoAST):
                     c3d += "p = p + "+str(bajar)+";\n"
                     c3d += "return;\n"
                 else:   
-                    entorno.insertarVariable("$retorno$",resExp,0)
-                    entorno.insertarVariable("$tipo$",resExp,0)
+                    entorno.setValor("$retorno$",resExp,0)
+                    entorno.setValor("$tipo$",resExp,0)
                     v = entorno.getValor("$retorno$")
 
-                    c3d = resExp.getc3d()+";\n"
+                    if(resExp.tipo.esBool()):
+                        c3d = resExp.getc3d()+";\n"
+                        if(len(resExp.getEV())>0):c3d+=resExp.getEV()+":"
+                        if(len(resExp.getEF())>0):c3d+=resExp.getEF()+":"
+                        c3d+="\n"
+                    else:
+                        c3d = resExp.getc3d()+";\n"
                     c3d += t1+" = p + "+str(v.getPos())+";\n"
                     c3d += "stack[int("+t1+")] = "+resExp.getValor()+";\n"                 
                     c3d += t1+" = p + "+str(v.getPos()+1)+";\n"
                     c3d += "stack[int("+t1+")] = "+str(resExp.tipo.getInt())+";\n"
                     
                     c3d += "return;\n"
-                    return Primitivo("",v.getValor().tipo,0,"","",c3d)
+                    return Primitivo("",Tipo(0),0,"","",c3d)
             TablaSimbolos.insertarError("Error sentencia fuera de llamada: "+str(resExp.getValor()),self.fila,self.columna)
             return Primitivo("",Tipo(0),0,"","","")
         

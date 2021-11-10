@@ -16,9 +16,9 @@ class Eprimitivo(NodoAST):
         if(self.tipo.esBool()):
             etiq = TablaSimbolos.getNewEtiq()
             if(self.valor == 1):
-                return Primitivo("0",self.tipo,self.dimension,etiq,"","goto "+etiq+";")
+                return Primitivo("1",self.tipo,self.dimension,etiq,"","goto "+etiq)
             else:
-                return Primitivo("0",self.tipo,self.dimension,"",etiq,"goto "+etiq+";")
+                return Primitivo("0",self.tipo,self.dimension,"",etiq,"goto "+etiq)
         elif(self.tipo.esString()):
             t = TablaSimbolos.getNewTemp()
             c3d = t+" = h + 0;\n"

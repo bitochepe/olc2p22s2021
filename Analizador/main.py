@@ -73,12 +73,12 @@ def Analizar2(entrada:str):
     print(ts.getTablaSimbolos()) #linea temporal
 
     #linea teporales
-    f = open("C:\\Users\\bitochepe\\Desktop\\olc2p2\\olc2p22s2021\\Analizador\\salida.txt", "w")
+    f = open("C:\\Users\\bitochepe\\Desktop\\olc2p22\\olc2p22s2021\\Analizador\\salida.txt", "w")
     f.write(res)
     f.close()
 
     return {'dot' : dot, 'rts' : rts, 'res' : res, 'estado':'true', 'errS':errS}
 
-f = open("C:\\Users\\bitochepe\\Desktop\\olc2p2\\olc2p22s2021\\Analizador\\entrada.txt", "r")
+f = open("C:\\Users\\bitochepe\\Desktop\\olc2p22\\olc2p22s2021\\Analizador\\entrada.txt", "r")
 input = f.read()
 Analizar2(input)

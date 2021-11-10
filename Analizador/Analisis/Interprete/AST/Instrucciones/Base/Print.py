@@ -19,7 +19,7 @@ class Print(NodoAST):
             expRes = x.ejecutar(entorno)
             if(expRes.tipo.esBool()):
                 etiqSalida = TablaSimbolos.getNewEtiq()
-                c3d += expRes.getc3d()
+                c3d += expRes.getc3d()+";\n"
                 if(len(expRes.getEV())>0): c3d += expRes.getEV()+":"
                 c3d += TablaSimbolos.printBoolean(1)
                 c3d += "goto "+etiqSalida+";\n"
@@ -63,8 +63,8 @@ class Print(NodoAST):
                 c3d += "if("+expRes.getValor()[1]+"== 0){goto "+etqs+";}\n"
                 c3d += "if("+expRes.getValor()[1]+"== 1){goto "+etqi+";}\n"
                 c3d += "if("+expRes.getValor()[1]+"== 2){goto "+etqf+";}\n"
-                c3d += "if("+expRes.getValor()[1]+"== 3){goto "+etqc+";}\n"
-                c3d += "if("+expRes.getValor()[1]+"== 4){goto "+etqb+";}\n"
+                c3d += "if("+expRes.getValor()[1]+"== 3){goto "+etqb+";}\n"
+                c3d += "if("+expRes.getValor()[1]+"== 4){goto "+etqc+";}\n"
                 c3d += "if("+expRes.getValor()[1]+"== 5){goto "+etqstr+";}\n"
                 c3d += "goto "+etqs+";\n"
 
@@ -72,29 +72,29 @@ class Print(NodoAST):
                 c3d += etqb+":\n"
                 c3d += expRes.getValor()[2].getc3d()+"\n"
                 etiqSalida = TablaSimbolos.getNewEtiq()
-                if(len(expRes.getValor()[2].getEV())>0): c3d += expRes.getValor()[0]+":"
+                if(len(expRes.getValor()[2].getEV())>0): c3d += expRes.getEV()+":"
                 c3d += TablaSimbolos.printBoolean(1)
                 c3d += "goto "+etiqSalida+";\n"
-                if(len(expRes.getValor()[2].getEF())>0): c3d += expRes.getValor()[0]+":"
+                if(len(expRes.getValor()[2].getEF())>0): c3d += expRes.getEF()+":"
                 c3d += TablaSimbolos.printBoolean(0)
                 c3d += etiqSalida+":\n"
                 c3d += "goto "+etqs+";\n"
 
                 #float
                 c3d += etqf+":\n"
-                c3d += expRes.getValor()[2].getc3d()
+                #c3d += expRes.getValor()[2].getc3d()
                 c3d += "fmt.Printf(\"%f\", "+expRes.getValor()[0]+");\n"
                 c3d += "goto "+etqs+";\n"
 
                 #char
                 c3d += etqc+":\n"
-                c3d += expRes.getValor()[2].getc3d()
+                #c3d += expRes.getValor()[2].getc3d()
                 c3d += "fmt.Printf(\"%c\", int("+expRes.getValor()[0]+"));\n"
                 c3d += "goto "+etqs+";\n"
 
                 #int
                 c3d += etqi+":\n"
-                c3d += expRes.getValor()[2].getc3d()
+                #c3d += expRes.getValor()[2].getc3d()
                 c3d += "fmt.Printf(\"%d\", int("+expRes.getValor()[0]+"));\n"
                 c3d += "goto "+etqs+";\n"
 
