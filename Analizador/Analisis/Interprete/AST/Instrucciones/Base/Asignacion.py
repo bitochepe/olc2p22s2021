@@ -39,6 +39,7 @@ class Asignacion(NodoAST):
                         c3d += ";\nstack[int("+t+")] = 0;\n"
                         if(bajar>0):
                             c3d +="p = p + "+str(bajar)+";\n" 
+                        TablaSimbolos.temporalUsado(t)
 
             else: #Se declaro la variable en ambito local 
                 if(self.palabra):
@@ -53,6 +54,7 @@ class Asignacion(NodoAST):
                         c3d += ";\nstack[int("+t+")] = 0;\n"
                         if(bajar>0):
                             c3d +="p = p + "+str(bajar)+";\n" 
+                        TablaSimbolos.temporalUsado(t)
                 
                     else: #La variable ya existia
                         TablaSimbolos.insertarError("No es declarar dos veces la misma variable: \""+str(self.id)+"\"")
@@ -69,6 +71,7 @@ class Asignacion(NodoAST):
                         c3d += ";\nstack[int("+t+")] = 0;\n"
                         if(bajar>0):
                             c3d +="p = p + "+str(bajar)+";\n" 
+                        TablaSimbolos.temporalUsado(t)
                 
                     else: #La variable ya existia
                         if(aux.tipo == 1): #se declaro la varible en un entorno global pero hace referencia a una global
@@ -85,10 +88,12 @@ class Asignacion(NodoAST):
                                 c3d += ";\nstack[int("+t+")] = 0;\n" 
                                 if(bajar>0):
                                     c3d +="p = p + "+str(bajar)+";\n" 
+                                TablaSimbolos.temporalUsado(t)
 
                         else:   #en ambito local
                             entorno.setValor(self.id,Primitivo("",Tipo(0),0,"","",""),0)
                             t = TablaSimbolos.getNewTemp()
+                            TablaSimbolos.temporalUsado(t)
                             bajar = entorno.getPtrLess(self.id)
                             if(bajar>0):
                                 c3d +="p = p - "+str(bajar)+";\n"
@@ -101,6 +106,7 @@ class Asignacion(NodoAST):
         #el valor de la expresion fue especificado
         else:        
             exp = self.valor.ejecutar(entorno)
+            TablaSimbolos.temporalUsado(exp.getValor())
             if(exp.tipo.esError()):
                 TablaSimbolos.insertarError(exp.getValor(),self.fila,self.columna)
                 return Primitivo("",Tipo(0),0,"","",c3d)
@@ -114,6 +120,7 @@ class Asignacion(NodoAST):
                         c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                         c3d += "stack[int("+str(entorno.getEtornoGlobal().getTam()-1)+")] = "+exp.getValor()+";\n"
                         t = TablaSimbolos.getNewTemp()
+                        TablaSimbolos.temporalUsado(t)
                         bajar = entorno.getPtrLess(self.id)
                         if(bajar>0):
                             c3d +="p = p - "+str(bajar)+";\n"
@@ -129,6 +136,7 @@ class Asignacion(NodoAST):
                             c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                             c3d += "stack[int("+str(entorno.getEtornoGlobal().getTam()-1)+")] = "+exp.getValor()+";\n"
                             t = TablaSimbolos.getNewTemp()
+                            TablaSimbolos.temporalUsado(t)
                             bajar = entorno.getPtrLess(self.id)
                             if(bajar>0):
                                 c3d +="p = p - "+str(bajar)+";\n"
@@ -164,6 +172,7 @@ class Asignacion(NodoAST):
                             entorno.insertarVariable(self.id,exp,0)
                             c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                             t = TablaSimbolos.getNewTemp()
+                            TablaSimbolos.temporalUsado(t)
                             bajar = entorno.getPtrLess(self.id)
                             if(bajar>0):
                                 c3d +="p = p - "+str(bajar)+";\n"
@@ -177,6 +186,7 @@ class Asignacion(NodoAST):
                                 entorno.insertarVariable(self.id,exp,0)
                                 c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                                 t = TablaSimbolos.getNewTemp()
+                                TablaSimbolos.temporalUsado(t)
                                 bajar = entorno.getPtrLess(self.id)
                                 if(bajar>0):
                                     c3d +="p = p - "+str(bajar)+";\n"
@@ -199,6 +209,7 @@ class Asignacion(NodoAST):
                             entorno.insertarVariable(self.id,exp,0)
                             c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                             t = TablaSimbolos.getNewTemp()
+                            TablaSimbolos.temporalUsado(t)
                             bajar = entorno.getPtrLess(self.id)
                             if(bajar>0):
                                 c3d +="p = p - "+str(bajar)+";\n"
@@ -212,6 +223,7 @@ class Asignacion(NodoAST):
                                 entorno.insertarVariable(self.id,exp,0)
                                 c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                                 t = TablaSimbolos.getNewTemp()
+                                TablaSimbolos.temporalUsado(t)
                                 bajar = entorno.getPtrLess(self.id)
                                 if(bajar>0):
                                     c3d +="p = p - "+str(bajar)+";\n"
@@ -233,6 +245,7 @@ class Asignacion(NodoAST):
                                 aux2 = entorno.getValorGlobal(self.id)
                                 if(aux2 is not None):
                                     t = TablaSimbolos.getNewTemp()
+                                    TablaSimbolos.temporalUsado(t)
                                     bajar = entorno.getPtrLess(self.id)
                                     if(bajar>0):
                                         c3d +="p = p - "+str(bajar)+";\n"
@@ -250,6 +263,7 @@ class Asignacion(NodoAST):
                                     aux2 = entorno.getValorGlobal(self.id)
                                     if(aux2 is not None):
                                         t = TablaSimbolos.getNewTemp()
+                                        TablaSimbolos.temporalUsado(t)
                                         bajar = entorno.getPtrLess(self.id)
                                         if(bajar>0):
                                             c3d +="p = p - "+str(bajar)+";\n"
@@ -267,6 +281,7 @@ class Asignacion(NodoAST):
                                 entorno.setValor(self.id,exp,0)
                                 c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                                 t = TablaSimbolos.getNewTemp()
+                                TablaSimbolos.temporalUsado(t)
                                 bajar = entorno.getPtrLess(self.id)
                                 if(bajar>0):
                                     c3d +="p = p - "+str(bajar)+";\n"
@@ -280,6 +295,7 @@ class Asignacion(NodoAST):
                                     entorno.setValor(self.id,exp,0)
                                     c3d += exp.getc3d()+"\n"+self.id+" = "+exp.getValor()+";\n"
                                     t = TablaSimbolos.getNewTemp()
+                                    TablaSimbolos.temporalUsado(t)
 
                                     bajar = entorno.getPtrLess(self.id)
                                     if(bajar>0):

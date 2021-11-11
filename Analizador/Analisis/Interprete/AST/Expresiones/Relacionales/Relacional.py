@@ -85,6 +85,10 @@ class Relacional(NodoAST):
         EtiqF = TablaSimbolos.getNewEtiq()
         c3d = i.getc3d() +"\n" + d.getc3d() +"\n"
         c3d += "if "+i.getValor()+o+d.getValor()+" {goto "+EtiqV+";}\ngoto "+EtiqF+";"
+
+        TablaSimbolos.temporalUsado(i.getValor())
+        TablaSimbolos.temporalUsado(d.getValor())
+
         return Primitivo("0",Tipo(3),0,EtiqV,EtiqF,c3d)
 
     def generarSTR(self,i:Primitivo,d:Primitivo):

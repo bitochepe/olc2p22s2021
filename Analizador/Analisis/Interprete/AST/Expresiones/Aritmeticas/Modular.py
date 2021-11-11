@@ -56,6 +56,10 @@ class Modular(NodoAST):
         c3d = i.getc3d() + "\n" + d.getc3d() + "\n"
         c3d += op1 + " = "+ i.getValor() + " + 0;\n"
         c3d += op2 + " = "+ d.getValor() + " + 0;\n"
+
+        TablaSimbolos.temporalUsado(i.getValor())
+        TablaSimbolos.temporalUsado(d.getValor())
+
         c3d += "if ("+op2+" != 0) {goto "+l1+";}\n"
         c3d +="fmt.Printf(\"%c\", 77);\n"
         c3d +="fmt.Printf(\"%c\", 97);\n"
@@ -78,6 +82,11 @@ class Modular(NodoAST):
         c3d += "goto "+l5+"\n"+l6+":\n"+ tmp2 + " = " + producto + " - " + op2 + ";\n"
         c3d += tmp + " = "+ op1 + " - "+ tmp2 + ";\n"
         c3d += l2+":\n"
-        #TablaSimbolos.insertarSalida(c3d)
-        #return Primitivo(tmp,Tipo(tipo),0,"","","")
+
+        TablaSimbolos.temporalUsado(op1)
+        TablaSimbolos.temporalUsado(op2)
+        TablaSimbolos.temporalUsado(iterador)
+        TablaSimbolos.temporalUsado(producto)
+        TablaSimbolos.temporalUsado(tmp2)
+
         return Primitivo(tmp,Tipo(tipo),0,"","",c3d)

@@ -26,10 +26,11 @@ class For(NodoAST):
             limS:Primitivo = exp.getValor()[1]
        
             Linicio = TablaSimbolos.getNewEtiq()
-            Lsalida = TablaSimbolos.getNewTemp()
+            Lsalida = TablaSimbolos.getNewEtiq()
             TablaSimbolos.insertarCiclo(Linicio,Lsalida)
 
             t = TablaSimbolos.getNewTemp()
+            TablaSimbolos.temporalUsado(t)
             c3d = limI.getc3d()+"\n"
             c3d += limS.getc3d()+"\n"
             #cambio simulado
@@ -60,33 +61,37 @@ class For(NodoAST):
             c3d += "p = p - "+str(actual.getTam())+";\n"
             TablaSimbolos.sacarCiclo()
 
-        elif(exp.tipo.esString()): #Se itera un string
-            entorno.insertarEntorno("iteradorFor","-")
-            entorno.insertarVariable(self.id,Primitivo(0,Tipo(4),0),1)
-            for x in exp.getValor():
-                entorno.setValor(self.id,Primitivo(x,Tipo(4),0),Tipo(4))
-                entorno.insertarEntorno("cuerpoFor","-")
-                resCuerpo = self.cuerpo.ejecutar(entorno)
-                entorno.eliminarEntorno()
-                if(resCuerpo is not None):
-                    if(resCuerpo.tipo.esBreak()):
-                        if(TablaSimbolos.huboCiclo()):
-                            entorno.eliminarEntorno()
-                            TablaSimbolos.sacarCiclo()
-                            return None
-                        else:
-                            TablaSimbolos.insertarError("Llamada break fuera de un ciclo",self.fila,self.columna)
-                            return None
-                    elif(resCuerpo.tipo.esContinue()):
-                        pass
-                    elif(resCuerpo.tipo.esReturn()):
-                        if(TablaSimbolos.huboLlamada()):
-                            return resCuerpo
-                        else:
-                            TablaSimbolos.insertarError("Llamada return fuera de una funcion",self.fila,self.columna)
-                            return None
-            entorno.eliminarEntorno()
-            return None
+            TablaSimbolos.temporalUsado(limI.getValor())
+            TablaSimbolos.temporalUsado(limS.getValor())
+            TablaSimbolos.temporalUsado(t)
+
+        # elif(exp.tipo.esString()): #Se itera un string
+        #     entorno.insertarEntorno("iteradorFor","-")
+        #     entorno.insertarVariable(self.id,Primitivo(0,Tipo(4),0),1)
+        #     for x in exp.getValor():
+        #         entorno.setValor(self.id,Primitivo(x,Tipo(4),0),Tipo(4))
+        #         entorno.insertarEntorno("cuerpoFor","-")
+        #         resCuerpo = self.cuerpo.ejecutar(entorno)
+        #         entorno.eliminarEntorno()
+        #         if(resCuerpo is not None):
+        #             if(resCuerpo.tipo.esBreak()):
+        #                 if(TablaSimbolos.huboCiclo()):
+        #                     entorno.eliminarEntorno()
+        #                     TablaSimbolos.sacarCiclo()
+        #                     return None
+        #                 else:
+        #                     TablaSimbolos.insertarError("Llamada break fuera de un ciclo",self.fila,self.columna)
+        #                     return None
+        #             elif(resCuerpo.tipo.esContinue()):
+        #                 pass
+        #             elif(resCuerpo.tipo.esReturn()):
+        #                 if(TablaSimbolos.huboLlamada()):
+        #                     return resCuerpo
+        #                 else:
+        #                     TablaSimbolos.insertarError("Llamada return fuera de una funcion",self.fila,self.columna)
+        #                     return None
+        #     entorno.eliminarEntorno()
+        #     return None
 
         else:
             TablaSimbolos.insertarError("Error en el tipo de la expresion For: "+str(exp.tipo.getNombre()),self.fila,self.columna)

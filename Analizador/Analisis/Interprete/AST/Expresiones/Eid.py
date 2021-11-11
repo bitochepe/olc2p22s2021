@@ -31,6 +31,8 @@ class Eid(NodoAST):
              else:   
                 c3d += t1+" = p + "+str(v.getPos())+";\n"
                 c3d += t2+" = stack[int("+t1+")];\n"
+                
+             TablaSimbolos.temporalUsado(t1)
              vr = Primitivo(t2,v.getValor().tipo,0,v.getValor().getEV(),v.getValor().getEF(),c3d)
              return vr
 

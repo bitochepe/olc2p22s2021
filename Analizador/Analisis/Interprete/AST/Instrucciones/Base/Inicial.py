@@ -38,4 +38,9 @@ class Inicial(NodoAST):
         codigo += etq+":\n"+t3+" = heap[int("+t2+")];\n"
         codigo += "if "+t3+" == -234 {goto "+etqs+";}\nfmt.Printf(\"%c\",int("+t3+"));\n"
         codigo += t2+" = "+t2+" + 1;\ngoto "+etq+";\n"+etqs+":\nreturn;\n}\n"
+
+        TablaSimbolos.temporalUsado(t1)
+        TablaSimbolos.temporalUsado(t2)
+        TablaSimbolos.temporalUsado(t3)  
+
         return codigo

@@ -7,23 +7,23 @@ from Analisis.Interprete.Entorno.TablaSimbolos import TablaSimbolos
 
 class NodoFuncion(NodoAST):
 
-    def __init__(self,id,params,cuerpo:Cuerpo) -> None:
+    def __init__(self,id,params,cuerpo:Cuerpo,tipo:Tipo) -> None:
         self.id = id
         self.params = params
         self.cuerpo = cuerpo
+        self.tipo = tipo
         pass
 
     def ejecutar(self, entorno:TablaSimbolos) -> Primitivo:
         c3d = "func "+self.id+"(){\n"
-        entorno.insertarEntorno("Funcion"+self.id,"-")
-        entorno.insertarVariable("$retorno$",Primitivo("",Tipo(0),0,"","",""),0)
-        entorno.insertarVariable("$tipo$",Primitivo("0",Tipo(0),0,"","",""),0)
-        entorno.insertarFuncion(self.id,self.params,self.cuerpo,entorno.getEtornoActual())
+        entorno.insertarEntorno("Funcion"+self.id,self.tipo.getNombre())
+        entorno.insertarVariable("$retorno$",Primitivo("",self.tipo,0,"","",""),0)
+        entorno.insertarFuncion(self.id,self.params,self.cuerpo,entorno.getEtornoActual(),self.tipo)
         TablaSimbolos.insertarLlamada(self.id)
         for x in self.params:
             entorno.insertarVariable(x.getId(),Primitivo("",x.getTipo(),0,"","",""),0)
         c3d += self.cuerpo.ejecutar(entorno).getc3d()
-        entorno.insertarFuncion(self.id,self.params,self.cuerpo,entorno.getEtornoActual())
+        entorno.insertarFuncion(self.id,self.params,self.cuerpo,entorno.getEtornoActual(),self.tipo)
         entorno.eliminarEntorno()
         c3d += "return;\n}\n"
         TablaSimbolos.insertarCodigoFuncion(c3d)

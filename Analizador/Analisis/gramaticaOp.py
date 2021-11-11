@@ -1,63 +1,25 @@
 #imports de todos los archivos para el analisis
 
 from Analisis.Interprete.AST.Instrucciones.Base.NodoFuncion import NodoFuncion
-from Analisis.Interprete.AST.Expresiones.Llamada import Llamada
-from Analisis.Interprete.AST.Instrucciones.Ciclos.For import For
-from Analisis.Interprete.Primitivos.Primitivo import Primitivo
-from Analisis.Interprete.AST.Instrucciones.Base.Print import Print
-from Analisis.Interprete.AST.Expresiones.Eprimitivo import Eprimitivo
-from Analisis.Interprete.Primitivos.Error import Error
-from Analisis.Interprete.Primitivos.Tipo import Tipo
-from Analisis.Interprete.AST.Expresiones.Aritmeticas.Suma import Suma
-from Analisis.Interprete.AST.Expresiones.Aritmeticas.Division import Division
-from Analisis.Interprete.AST.Expresiones.Aritmeticas.Resta import Resta
-from Analisis.Interprete.AST.Expresiones.Aritmeticas.Multiplicacion import Multiplicacion
-from Analisis.Interprete.AST.Expresiones.Aritmeticas.Modular import Modular
-from Analisis.Interprete.AST.Expresiones.Aritmeticas.Potencia import Potencia
-from Analisis.Interprete.AST.Expresiones.Aritmeticas.Unario import Unario
-from Analisis.Interprete.AST.Expresiones.Relacionales.Relacional import Relacional
-from Analisis.Interprete.AST.Expresiones.Logicas.Logica import Logica  
-from Analisis.Interprete.AST.Expresiones.Eid import Eid
-from Analisis.Interprete.AST.Instrucciones.Sentencias.If import If
-from Analisis.Interprete.AST.Instrucciones.Cuerpo import Cuerpo
-from Analisis.Interprete.AST.Instrucciones.Base.Asignacion import Asignacion
-from Analisis.Interprete.AST.Instrucciones.Ciclos.While import While
-from Analisis.Interprete.AST.Expresiones.inF import inF
-from Analisis.Interprete.AST.Instrucciones.Sentencias.Break import Break
-from Analisis.Interprete.AST.Instrucciones.Sentencias.Continue import Continue
-from Analisis.Interprete.AST.Instrucciones.Sentencias.Return import Return
-from Analisis.Interprete.AST.Instrucciones.Base.Parametro import Parametro
-
 
 #variables globales de utilidad
 lerrores = []
+linea = 0
 entrada = ""
 reservadas = {
-    'Int64'	: 'Rint',
-    'Float64' : 'Rfloat',
-    'Bool' : 'Rbool',
-    'Char'	: 'Rchar',
-    'String' : 'Rstring',
-    'nothing' : 'Rnothing',
-    'print' : 'Rprint',
-    'println' : 'Rprintln',
-    'true' : 'Rtrue',
-    'false' : 'Rfalse',
-    'if' : 'Rif',
-    'else' : 'Relse',
-    'end' : 'Rend',
-    'elseif':'Relseif',
-    'local' : 'Rlocal',
-    'global' : 'Rglobal',
-    'while' : 'Rwhile',
-    'for' : 'Rfor',
-    'in' : 'Rin',
-    'break' : 'Rbreak',
-    'continue' : 'Rcontinue',
-    'return' : 'Rreturn',
-    'function' : 'Rfunction',
-    'struct' : 'Rstruct',
-    'mutable' : 'Rmutable'
+    'stack'	: 'Rstack',
+    'heap' : 'Rheap',
+    'func' : 'Rfunc',
+    'package'	: 'Rpackage',
+    'main' : 'Rmain',
+    'import' : 'Rimport',
+    'fmt' : 'Rfmt',
+    'Printf' : 'Rprint',
+    'var' : 'Rtrue',
+    'int' : 'Rfalse',
+    'float64' : 'Rfloat64',
+    'goto' : 'Rgoto',
+    'if' : 'Rif'
 }
 
 tokens  = [
@@ -68,57 +30,50 @@ tokens  = [
     'parC',
 	'corA',
     'corC',
+    'llaveA',
+    'llaveC',
     'igual',
     'mas',
     'menos',
     'por',
     'div',
-    'modular',
-    'potencia',
     'mayq',
     'meq',
     'mayiq',
     'meiq',
     'iqiq',
 	'noiq',
-    'and',
-	'or',
-    'not',
     'entero',
     'decimal',
-    'cadenaS',
-    'cadenaC',
-    'identificador'
+    'identificador',
+    'cadena',
+    'encabezado',
+    'punto'
 ] + list(reservadas.values())
-
 
 # Tokens
 t_pyc = r';'
 t_dospuntos = r':'
+t_punto = r'.'
 t_coma = r','
 t_parA = r'\('
 t_parC = r'\)'
 t_corA = r'\['
 t_corC = r'\]'
+t_llaveA = r'\{'
+t_llaveC = r'\}'
 t_igual = r'='
 t_mas = r'\+'
 t_menos = r'-'
 t_por = r'\*'
 t_div = r'/'
-t_modular = r'%'
-t_potencia = r'\^'
 t_mayiq = r'>='
 t_meiq = r'<='
 t_mayq = r'>'
 t_meq = r'<'
 t_iqiq = r'=='
 t_noiq = r'!='
-t_and = r'&&'
-t_or = r'\|\|'
-t_not = r'!'
-
-t_ignore_comentarioM =  r'\#\=[^\=]\#'
-t_ignore_comentarioS = r'\#.*'
+t_encabezado = r'package main;\nimport("fmt");\nvar p, h float64;\nvar stack[100000]float64;\nvar heap[100000]float64;'
 
 def t_decimal(t):
     r'\d+\.\d+'
@@ -143,12 +98,7 @@ def t_entero(t):
         t.value = 0
     return t
 
-def t_cadenaC(t):
-    r'\'[a-zA-ZñÑ]\''
-    t.value = t.value[1:-1] #se toma el texto sin comillas
-    return t 
-
-def t_cadenaS(t):
+def t_cadena(t):
     r'\".*?\"'
     t.value = t.value[1:-1] #se toma el texto sin comillas
     return t 
@@ -157,10 +107,11 @@ t_ignore = " \t\r"
 
 def t_newline(t):
      r'\n+'
-     t.lexer.lineno += t.value.count('\n')
+     t.lexer.lineno += t.value.count("\n")
 
 def t_error(t):
-    lerrores.append(Error('Lexico','Caracter no valido: '+t.value[0],t.lexer.lineno,find_column(t.lexer.lineno,t.lexer.lexpos)))
+    
+    lerrores.append("Error en linea")
     t.lexer.skip(1)
 
 def find_column(token,pos):
@@ -171,22 +122,18 @@ def find_column(token,pos):
 from ply import lex as lex
 lexer = lex.lex()
 
-# Asociación de operadores y precedencia
-precedence = (
-    ('left','or'),
-    ('left','and'),
-    ('left','mayq','meq','mayiq','meiq','iqiq','noiq'),
-    ('left','mas','menos'),
-    ('left','por','div','modular'),
-    ('right','potencia'),
-    ('right','unaria','not'),
-    ('left', 'parA')
-    )
-
 # Definición de la gramática
 def p_S(t):
-    'S : CUERPO '
+    '''S : encabezado var LVAR FUNCION'''
     t[0] = {'tokens':t[1], 'errores': lerrores}
+
+
+def p_LVAR(t):
+    '''LVAR : LVAR coma identificador Rfloat64 pyc
+            | identificador'''
+
+def p_FUNCION(t):
+    '''FUNCION : Rfunc identificador parA parC llaveA CUERPO llaveC'''
 
 def p_CUERPO(t):
     'CUERPO : LINS'
@@ -202,17 +149,31 @@ def p_LINS(t):
         t[0] = [t[1]]
     
 def p_INS(t):
-    '''INS : PRINT  
-            | PIF
-            | ASIGNACION
-            | WHILE
-            | FOR
-            | TRANSFERENCIA
-            | DECFUNC
-            | LLAMADA pyc
-            | DECSTRUCT'''
+    '''INS : ASIGNA
+            | ETIQUETA
+            | SALTO
+            | PRINT
+            | IF
+            | LLAMADA'''
     t[0] = t[1]
 
+def p_ASIGNA(t):
+    '''ASIGNA : identificador igual E pyc
+            | Rstack corA Rint parA E parC igual E pyc
+            | identificador igual Rstack corA Rint parA E parC pyc'''
+
+def p_ETIQUETA(t):
+    '''ETIQUETA : identificador dospuntos'''
+
+def p_SALTO(t):
+    '''SALTO : Rgoto identificador pyc'''
+
+def p_PRINT(t):
+    '''PRINT : Rfmt punto Rprint parA cadena coma E parC pyc'''
+
+def p_IF(t):
+    '''IF : Rif'''
+def p_LLAMADA(t):           
 def p_DECSTRUCT(t):
     '''DECSTRUCT : PMUTABLE Rstruct identificador LATR Rend pyc'''
 

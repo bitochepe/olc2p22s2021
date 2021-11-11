@@ -1,4 +1,4 @@
-from os import times
+
 from typing import List
 from Analisis.Interprete.Primitivos.Tipo import Tipo
 from Analisis.Interprete.AST.NodoAST import NodoAST

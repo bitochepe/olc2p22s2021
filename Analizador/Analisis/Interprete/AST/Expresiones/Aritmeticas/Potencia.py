@@ -53,6 +53,9 @@ class Potencia(NodoAST):
         et2 = TablaSimbolos.getNewEtiq() #etiqueta para potencias negativas
         et3 = TablaSimbolos.getNewEtiq() #etiqueta de salida
 
+        TablaSimbolos.temporalUsado(i.getValor())
+        TablaSimbolos.temporalUsado(d.getValor())
+
         c3d += "if "+op2+" == 0 {goto "+et1+";} \nif "+op2+" < 0 {goto "+et2+";}\n" 
         c3d += op2 + " = " + op2 +" - 1;\n"
 
@@ -68,8 +71,9 @@ class Potencia(NodoAST):
         sl2 = TablaSimbolos.getNewEtiq()
         c3d += et2 +":\n"+op2+" = "+op2+" + 1;\n"+sl+":\nif "+op2+" >= 0 {goto "+sl2+";}\n"+op1+" = "+op1+" * "+aux+";\n"+op2+" = "+op2+" + 1;\ngoto "+sl+";\n"+sl2+":\n"+op1+" = 1 / "+op1+";\ngoto "+et3+";\n"+et3+":"
 
-        #TablaSimbolos.insertarSalida(c3d)
-        #return Primitivo(op1,Tipo(t),0,"","","")
+        TablaSimbolos.temporalUsado(op2)
+        TablaSimbolos.temporalUsado(aux)
+
         return Primitivo(op1,Tipo(t),0,"","",c3d)
 
     def generarSTR(self,hi:Primitivo,hd:Primitivo):
@@ -90,4 +94,11 @@ class Potencia(NodoAST):
         c3d += t4 + " = "+t4+" - 1;\nif("+t4+" > 0){\n"
         c3d += t1 + " = "+hi.getValor()+"\ngoto "+etq+";\n}\n"
         c3d += "heap[int(h)] = -234;\nh = h + 1;\n"
+
+        TablaSimbolos.temporalUsado(t1)
+        TablaSimbolos.temporalUsado(t3)
+        TablaSimbolos.temporalUsado(t4)
+        TablaSimbolos.temporalUsado(hi.getValor())
+        TablaSimbolos.temporalUsado(hd.getValor())
+
         return Primitivo(t0,Tipo(5),0,"","",c3d)

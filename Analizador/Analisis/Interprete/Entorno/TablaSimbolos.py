@@ -6,7 +6,7 @@ from Analisis.Interprete.Entorno.Entorno import Entorno
 from Analisis.Interprete.Primitivos.Primitivo import Primitivo
 from Analisis.Interprete.Entorno.Simbolo import Simbolo
 from Analisis.Interprete.Primitivos.Var import Var
-
+from Analisis.Interprete.Primitivos.Tipo import Tipo
 
 class TablaSimbolos:
 
@@ -21,6 +21,7 @@ class TablaSimbolos:
     listavars = []
     codigoFunciones = ""
     listaTemporales = []
+    tempNoUsados = []
 
     def __init__(self) -> None:
         self.listaEntornos = [Entorno]
@@ -115,8 +116,8 @@ class TablaSimbolos:
             TablaSimbolos.repTS.append(Var(nombre,self.listaEntornos[0].getNombre(),0,0))
             return True
 
-    def insertarFuncion(self,id:str,parametros,cuerpo:Cuerpo,entorno:Entorno):
-        self.listaMetodos[id] = Funcion(id,parametros,cuerpo,entorno)
+    def insertarFuncion(self,id:str,parametros,cuerpo:Cuerpo,entorno:Entorno,tipo:Tipo):
+        self.listaMetodos[id] = Funcion(id,parametros,cuerpo,entorno,tipo)
 
     def existeFuncion(self,id:str) -> Funcion:
         if(self.listaMetodos.get(id,None) is not None):
@@ -197,7 +198,15 @@ class TablaSimbolos:
     def getNewTemp():
         TablaSimbolos.tempActual += 1
         TablaSimbolos.decvariables += ", t"+str(TablaSimbolos.tempActual)
+        TablaSimbolos.tempNoUsados.insert(0,"t"+str(TablaSimbolos.tempActual))
         return "t"+str(TablaSimbolos.tempActual)
+
+    @staticmethod
+    def temporalUsado(tmp):
+        for x in TablaSimbolos.tempNoUsados:
+            if(x == tmp):
+                TablaSimbolos.tempNoUsados.remove(tmp)
+        
     
     @staticmethod
     def getNewEtiq():

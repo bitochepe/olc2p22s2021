@@ -27,11 +27,15 @@ class Multiplicacion(NodoAST):
                 tmp = TablaSimbolos.getNewTemp()
                 c3d = hizq.getc3d() + "\n" + hder.getc3d() +"\n"
                 c3d += tmp+" = "+hizq.getValor()+" * "+hder.getValor()+";"
+                TablaSimbolos.temporalUsado(hizq.getValor())
+                TablaSimbolos.temporalUsado(hder.getValor())
                 return Primitivo(tmp,Tipo(1),0,"","",c3d)
             elif(tipores == 2):
                 tmp = TablaSimbolos.getNewTemp()
                 c3d = hizq.getc3d() + "\n" + hder.getc3d() +"\n"
                 c3d += tmp+" = "+hizq.getValor()+" * "+hder.getValor()+";"
+                TablaSimbolos.temporalUsado(hizq.getValor())
+                TablaSimbolos.temporalUsado(hder.getValor())
                 return Primitivo(tmp,Tipo(2),0,"","",c3d)
             elif(tipores == 5):
                 #operaciones con strings 3D
@@ -63,6 +67,9 @@ class Multiplicacion(NodoAST):
         c3d += t1 + " = "+hi.getValor()+" + 0;\n"
         c3d += t2 + " = "+hd.getValor()+" + 0;\n"
 
+        TablaSimbolos.temporalUsado(hi.getValor())
+        TablaSimbolos.temporalUsado(hd.getValor())
+
         c3d += etq+":\n"+t3+" = heap[int("+t1+")];\n"
         c3d += "if "+t3+" == -234 {goto "+etqs+";}\nheap[int(h)] = "+t3+";\nh = h + 1;\n"
         c3d += t1+" = "+t1+" + 1;\ngoto "+etq+";\n"+etqs+":\n"
@@ -72,5 +79,10 @@ class Multiplicacion(NodoAST):
         c3d += t2+" = "+t2+" + 1;\ngoto "+etq2+";\n"+etqs2+":\n"
 
         c3d += "heap[int(h)] = -234;\nh = h + 1;\n"
+
+        TablaSimbolos.temporalUsado(t1)
+        TablaSimbolos.temporalUsado(t2)
+        TablaSimbolos.temporalUsado(t3)
+        TablaSimbolos.temporalUsado(t4)
 
         return Primitivo(t4,Tipo(5),0,"","",c3d)

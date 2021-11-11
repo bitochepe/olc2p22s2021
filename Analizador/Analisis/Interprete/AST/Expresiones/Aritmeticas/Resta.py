@@ -27,11 +27,15 @@ class Resta(NodoAST):
                 tmp = TablaSimbolos.getNewTemp()
                 c3d = hizq.getc3d() + "\n" + hder.getc3d() +"\n"
                 c3d += tmp+" = "+hizq.getValor()+" - "+hder.getValor()+";"
+                TablaSimbolos.temporalUsado(hizq.getValor())
+                TablaSimbolos.temporalUsado(hder.getValor())
                 return Primitivo(tmp,Tipo(1),0,"","",c3d)
             elif(tipores == 2):
                 tmp = TablaSimbolos.getNewTemp()
                 c3d = hizq.getc3d() + "\n" + hder.getc3d() +"\n"
                 c3d += tmp+" = "+hizq.getValor()+" - "+hder.getValor()+";"
+                TablaSimbolos.temporalUsado(hizq.getValor())
+                TablaSimbolos.temporalUsado(hder.getValor())    
                 return Primitivo(tmp,Tipo(2),0,"","",c3d)
             else:
                 return Primitivo("Ocurrio un error desconocido",Tipo(-1),0,"","","")

@@ -22,11 +22,13 @@ class Unario(NodoAST):
                     tmp = TablaSimbolos.getNewTemp()
                     c3d = ex.getc3d() + "\n" 
                     c3d +=tmp+" = 0 + "+ex.getValor()+";"
+                    TablaSimbolos.temporalUsado(ex.getValor())
                     return Primitivo(tmp,Tipo(1),0,"","",c3d)
                 else:
                     tmp = TablaSimbolos.getNewTemp()
                     c3d = ex.getc3d() + "\n"
                     c3d += tmp+" = 0 - "+ex.getValor()+";"
+                    TablaSimbolos.temporalUsado(ex.getValor())
                     return Primitivo(tmp,Tipo(1),0,"","",c3d)
             
             elif(ex.tipo.esFloat()):
@@ -34,11 +36,13 @@ class Unario(NodoAST):
                     tmp = TablaSimbolos.getNewTemp()
                     c3d = ex.getc3d() + "\n"
                     c3d += tmp+" = 0 + "+ex.getValor()+";"
+                    TablaSimbolos.temporalUsado(ex.getValor())
                     return Primitivo(tmp,Tipo(2),0,"","",c3d)
                 else:
                     tmp = TablaSimbolos.getNewTemp()
                     c3d = ex.getc3d() + "\n"
                     c3d += tmp+" = 0 - "+ex.getValor()+";"
+                    TablaSimbolos.temporalUsado(ex.getValor())
                     return Primitivo(tmp,Tipo(2),0,"","",c3d)
             else:
                 return Primitivo("Error de tipo unario: "+ex.tipo.getTipo(),Tipo(-1),0,"","","")

@@ -59,6 +59,8 @@ class Division(NodoAST):
         c3d +=l1+":\n"
         c3d += tmp + " = " + i.getValor() + " / " + d.getValor() +";\n"
         c3d += l2+":\n"
-        #TablaSimbolos.insertarSalida(c3d)
-        #return Primitivo(tmp,Tipo(tipo),0,"","","")
+
+        TablaSimbolos.temporalUsado(i.getValor())
+        TablaSimbolos.temporalUsado(d.getValor())
+
         return Primitivo(tmp,Tipo(tipo),0,"","",c3d)

@@ -28,27 +28,13 @@ class If(NodoAST):
             if(self.cuerpoIF is not None): 
                 cif = self.cuerpoIF.ejecutar(entorno)
                 c3d += cif.getc3d() + "\n"
-                
-                if(cif.tipo.esReturn()):
-                    pass
-                elif(cif.tipo.esBreak()):
-                    pass
-                elif(cif.tipo.esContinue()):
-                    pass
             c3d += "goto "+Lsalida+";\n"
             c3d += Rexp.getEF() +":\n"
             if(self.cuerpoElse is not None): 
                 celse = self.cuerpoElse.ejecutar(entorno)
                 c3d += celse.getc3d() + "\n"
-                
-                if(cif.tipo.esReturn()):
-                    pass
-                elif(cif.tipo.esBreak()):
-                    pass
-                elif(cif.tipo.esContinue()):
-                    pass
             c3d += Lsalida+":\n"
-            
+            TablaSimbolos.temporalUsado(Rexp.getValor())
             return Primitivo("",Tipo(0),0,"","",c3d)
 
             # if(Rexp.valor):
