@@ -1,3 +1,5 @@
+
+import datetime
 class Error:
 
     def __init__(self,tipo,descripcion,fila,columna) -> None:
@@ -8,4 +10,5 @@ class Error:
         pass
 
     def getFilaReporte(self)->str:
-        return "<tr><td>"+self.tipo+"</td>"+"<td>"+self.descripcion+"</td>"+"<td>"+str(self.fila)+"</td>"+"<td>"+str(self.columna)+"</td></tr>"
+        x = datetime.datetime.now()
+        return "<tr><td>"+self.tipo+"</td>"+"<td>"+self.descripcion+"</td>"+"<td>"+str(self.fila)+"</td>"+"<td>"+str(self.columna)+"</td><td>"+x.strftime("%c")+"</td></tr>"

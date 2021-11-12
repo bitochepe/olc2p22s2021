@@ -22,6 +22,7 @@ class TablaSimbolos:
     codigoFunciones = ""
     listaTemporales = []
     tempNoUsados = []
+    listaMirilla = []
 
     def __init__(self) -> None:
         self.listaEntornos = [Entorno]
@@ -181,7 +182,7 @@ class TablaSimbolos:
 
     @staticmethod
     def getErrores():
-        res = ""
+        res = '<table class="table table-hover" style="cellpadding="0" cellspacing="0" width="80%""><tr style="font-weight: bold; background: red;"><td>Tipo</td><td>Descripcion</td><td>Fila</td><td>Columna</td><td>Fecha</td></tr>'
         for x in TablaSimbolos.listaErrores:
             res += x.getFilaReporte()
         return res
@@ -226,10 +227,19 @@ class TablaSimbolos:
         TablaSimbolos.listavars = []
         TablaSimbolos.codigoFunciones = ""
         TablaSimbolos.listaTemporales = []
+        TablaSimbolos.listaMirilla = []
     
     @staticmethod
     def addVar(var):
         TablaSimbolos.listavars.append(var)
+
+    @staticmethod
+    def getMirilla():
+        res = ""
+        for x in TablaSimbolos.listaMirilla:
+            res += x.getReporte()
+        res = '<table class="table table-hover" style="cellpadding="0" cellspacing="0" width="80%""><tr style="font-weight: bold; background: lightblue;"><td>Fila</td><td>Tipo</td><td>Codigo a optimizar</td><td>Codigo optimizado</td><td>Regla No.</td></tr>'+res+'</table>'
+        return res 
 
     @staticmethod
     def printBoolean(valor):

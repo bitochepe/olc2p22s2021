@@ -1,25 +1,20 @@
 #imports de todos los archivos para el analisis
 
-from Analisis.Interprete.AST.Instrucciones.Base.NodoFuncion import NodoFuncion
+from Analisis.Optimizacion.NodoOPT import NodoOPT
 
 #variables globales de utilidad
 lerrores = []
-linea = 0
 entrada = ""
 reservadas = {
-    'stack'	: 'Rstack',
-    'heap' : 'Rheap',
     'func' : 'Rfunc',
-    'package'	: 'Rpackage',
-    'main' : 'Rmain',
-    'import' : 'Rimport',
     'fmt' : 'Rfmt',
     'Printf' : 'Rprint',
-    'var' : 'Rtrue',
-    'int' : 'Rfalse',
+    'int' : 'Rint',
     'float64' : 'Rfloat64',
     'goto' : 'Rgoto',
-    'if' : 'Rif'
+    'if' : 'Rif',
+    'var' : 'Rvar',
+    'return' : "Rreturn"
 }
 
 tokens  = [
@@ -54,7 +49,7 @@ tokens  = [
 # Tokens
 t_pyc = r';'
 t_dospuntos = r':'
-t_punto = r'.'
+t_punto = r'\.'
 t_coma = r','
 t_parA = r'\('
 t_parC = r'\)'
@@ -122,18 +117,24 @@ def find_column(token,pos):
 from ply import lex as lex
 lexer = lex.lex()
 
+
 # Definición de la gramática
 def p_S(t):
-    '''S : encabezado var LVAR FUNCION'''
+    '''S : LFUNC'''
     t[0] = {'tokens':t[1], 'errores': lerrores}
 
-
-def p_LVAR(t):
-    '''LVAR : LVAR coma identificador Rfloat64 pyc
-            | identificador'''
+def p_LFUNC(t):
+    '''LFUNC : LFUNC FUNCION
+            | FUNCION'''
+    if(t.slice[1].type == 'LFUNC'):
+        t[1].append(t[2])
+        t[0] = t[1]
+    else:
+        t[0] = [t[1]]
 
 def p_FUNCION(t):
     '''FUNCION : Rfunc identificador parA parC llaveA CUERPO llaveC'''
+    t[0] = NodoOPT(t[6],"","",t[2],"")
 
 def p_CUERPO(t):
     'CUERPO : LINS'
@@ -148,330 +149,128 @@ def p_LINS(t):
     else:
         t[0] = [t[1]]
     
+    #tipo: ASIGNA : 1, ASIGNARSTACKHEAP TMP : 1.3, ASIGNAR A TMP STACKHEAP :1.6 TMP = TMP : 1.9, 
+    #ETIQUETA: 2, SALTO: 3, PRINT: 4, IF: 5, LLAMADA: 6
 def p_INS(t):
     '''INS : ASIGNA
             | ETIQUETA
             | SALTO
             | PRINT
             | IF
-            | LLAMADA'''
+            | LLAMADA
+            | RETORNO'''
     t[0] = t[1]
 
 def p_ASIGNA(t):
     '''ASIGNA : identificador igual E pyc
-            | Rstack corA Rint parA E parC igual E pyc
-            | identificador igual Rstack corA Rint parA E parC pyc'''
+            | identificador igual PRIMITIVO pyc
+            | identificador corA Rint parA PRIMITIVO parC corC igual PRIMITIVO pyc
+            | identificador igual identificador corA Rint parA PRIMITIVO parC corC pyc'''
+    if(t.slice[3].type == 'E'):
+        t[3].id = t[1]
+        t[3].tipo = 1
+        t[0] = t[3]
+    elif(t.slice[3].type == 'PRIMITIVO'):
+        t[0] = NodoOPT(t[1],t[3],"","",1.9)     
+    elif(t.slice[3].type == 'Rint'):
+        t[0] = NodoOPT(t[1],t[5],t[9],"",1.3)
+    elif(t.slice[3].type == 'identificador'):
+        t[0] = NodoOPT(t[1],t[3],t[7],"",1.6)
 
 def p_ETIQUETA(t):
     '''ETIQUETA : identificador dospuntos'''
+    t[0] = NodoOPT(t[1],"","","",2)
 
 def p_SALTO(t):
     '''SALTO : Rgoto identificador pyc'''
+    t[0] = NodoOPT(t[2],"","","",3)
 
 def p_PRINT(t):
-    '''PRINT : Rfmt punto Rprint parA cadena coma E parC pyc'''
+    '''PRINT : Rfmt punto Rprint parA cadena coma PRIMITIVO parC pyc
+             | Rfmt punto Rprint parA cadena coma Rint parA PRIMITIVO parC parC pyc'''
+    if(t.slice[7].type == 'PRIMITIVO'):
+        t[0] = NodoOPT(t[5],"","",t[7],4)
+    elif(t.slice[7].type == 'Rint'):
+        t[0] = NodoOPT(t[5],"","",t[9],4.5)
 
 def p_IF(t):
-    '''IF : Rif'''
+    '''IF : Rif E llaveA SALTO llaveC
+            | Rif parA E parC llaveA SALTO llaveC'''
+    if(t.slice[2].type == 'E'):
+        t[2].tipo = 5
+        t[2].id = t[4].id
+        t[0] = t[2]
+    elif(t.slice[2].type == 'parA'):
+        t[3].tipo = 5
+        t[3].id = t[6].id
+        t[0] = t[3]
+
 def p_LLAMADA(t):           
-def p_DECSTRUCT(t):
-    '''DECSTRUCT : PMUTABLE Rstruct identificador LATR Rend pyc'''
+    '''LLAMADA : identificador parA parC pyc'''
+    t[0] = NodoOPT(t[1],"","","",6)
 
-
-def p_LATR(t):
-    '''LATR : LATR identificador dospuntos dospuntos TATR
-              | identificador dospuntos dospuntos TATR'''
-
-
-def p_TATR(t):
-    ''' TATR : TIPO
-              | identificador'''
-    if(t.slice[1].type == 'TIPO'):
-        t[0] = t[1]
-    elif(t.slice[1].type == 'identificador'):
-        t[0] = t[9]
-
-def p_PMUTABLE(t):
-    '''PMUTABLE : Rmutable
-                | empty'''
-    if(t.slice[1].type == 'Rmutable'):
-        t[0] = True
-    else:
-        t[0] = False
-
-def p_DECFUNC(t):
-    '''DECFUNC : Rfunction identificador parA LPARF parC dospuntos dospuntos TIPO LINS Rend pyc'''
-    t[0] = NodoFuncion(t[2],t[4],Cuerpo(t[9]),t[8])
-
-
-def p_LPARF(t):
-    '''LPARF : LPARF coma identificador dospuntos dospuntos TIPO
-              | identificador dospuntos dospuntos TIPO
-              | empty'''
-
-    if(t.slice[1].type == "LPARF"):
-        t[1].append(Parametro(t[3],t[6]))
-        t[0] = t[1]
-    elif(t.slice[1].type == 'identificador'):
-        t[0] = [Parametro(t[1],t[4])]
-    elif(t.slice[1].type == 'empty'):
-        t[0] = []
-
-def p_TRANSFERENCIA(t):
-    '''TRANSFERENCIA : Rbreak pyc
-                     | Rcontinue pyc
-                     | Rreturn pyc
-                     | Rreturn E pyc'''
-
-    if(t.slice[1].type == 'Rbreak'):
-        t[0] = Break(t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
-    elif(t.slice[1].type == 'Rcontinue'):
-        t[0] = Continue(t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
-    elif(t.slice[1].type == 'Rreturn'):
-        if(t.slice[2].type == 'pyc'):
-            t[0] = Return(None,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
-        elif(t.slice[2].type == 'E'):
-            t[0] = Return(t[2],t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
-
-def p_FOR(t):
-    '''FOR : Rfor identificador Rin FORE LINS Rend pyc'''
-    t[0] = For(t[2],t[4],Cuerpo(t[5]),t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
-
-def p_FORE(t):
-    ''' FORE : E dospuntos E
-              | cadenaS
-              | identificador'''
-    if(t.slice[1].type == 'E'):
-        t[0] = inF(t[1],t[3])
-    elif(t.slice[1].type == 'cadenaS'):
-        t[0] = Eprimitivo(t[1],Tipo(5),0)
-    elif(t.slice[1].type == 'identificador'):
-        t[0] = Eid(t[1],t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
-
-def p_WhHILE(t):
-    '''WHILE : Rwhile E LINS Rend pyc'''
-    t[0] = While(t[2],Cuerpo(t[3]),t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
-
-def p_DECLARACION(t):
-    '''ASIGNACION : identificador igual E dospuntos dospuntos TIPO pyc
-                   | Rlocal identificador igual E dospuntos dospuntos TIPO pyc
-                   | Rglobal identificador igual E dospuntos dospuntos TIPO pyc
-                   | Rlocal identificador igual E pyc 
-                   | Rglobal identificador igual E pyc
-                   | identificador igual E pyc
-                   | Rlocal identificador pyc
-                   | Rglobal identificador pyc'''
-                   
-    if(t.slice[1].type == 'identificador'):
-        if(t.slice[4].type == 'pyc'):
-            t[0] = Asignacion(t[1],t[3],None,False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),False)
-        elif(t.slice[4].type == 'dospuntos'):
-            t[0] = Asignacion(t[1],t[3],t[6],False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),False)
-    elif(t.slice[1].type == 'Rlocal'):
-        if(t.slice[3].type == 'pyc'):
-            t[0] = Asignacion(t[2],None,None,False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),True)
-        elif(t.slice[5].type == 'dospuntos'):
-            t[0] = Asignacion(t[2],t[4],t[7],False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),True)
-        elif(t.slice[5].type == 'pyc'):
-            t[0] = Asignacion(t[2],t[4],None,False,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),True)
-        
-    elif(t.slice[1].type == 'Rglobal'):
-        if(t.slice[3].type == 'pyc'):
-            t[0] = Asignacion(t[2],None,None,True,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),True)
-        elif(t.slice[5].type == 'dospuntos'):
-            t[0] = Asignacion(t[2],t[4],t[7],True,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),True)
-        elif(t.slice[5].type == 'pyc'):
-            t[0] = Asignacion(t[2],t[4],None,True,t.lineno(0),find_column(t.lineno(0),t.lexpos(0)),True)
-
-def p_TIPO(t):
-    '''
-    TIPO : Rint
-    | Rfloat
-    | Rbool
-    | Rchar
-    | Rstring
-    | Rnothing
-    '''
-    if(t.slice[1].type == 'Rint'):
-        t[0] = Tipo(1)
-    elif(t.slice[1].type == 'Rfloat'):
-        t[0] = Tipo(2)
-    elif(t.slice[1].type == 'Rbool'):
-        t[0] = Tipo(3)
-    elif(t.slice[1].type == 'Rchar'):
-        t[0] = Tipo(4)
-    elif(t.slice[1].type == 'Rstring'):
-        t[0] = Tipo(5)
-    elif(t.slice[1].type == 'Rnothing'):
-        t[0] = Tipo(0)
-    else:
-        t[0] = Tipo(-1)
-
-def p_PIF(t):
-    '''PIF : Rif E LINS Rend pyc
-           | Rif E LINS Relse LINS Rend pyc
-           | Rif E LINS IFELSE'''
-    if(t.slice[4].type == 'Rend'):
-        t[0] = If(Cuerpo(t[3]),None,t[2],t.lineno(1),find_column(t.lineno(1),t.lexpos(1)))
-    elif(t.slice[4].type == 'Relse'):
-        t[0] = If(Cuerpo(t[3]),Cuerpo(t[5]),t[2],t.lineno(1),find_column(t.lineno(1),t.lexpos(1)))
-    elif(t.slice[4].type == 'IFELSE'):
-        t[0] = If(Cuerpo(t[3]),Cuerpo([t[4]]),t[2],t.lineno(1),find_column(t.lineno(1),t.lexpos(1)))
-    else:
-        t[0] = Eprimitivo("Error al intentar leer if",Tipo(-1),0)
-
-def p_IFELSE(t):
-    '''
-    IFELSE : Relseif E LINS Rend pyc
-            | Relseif E LINS Relse LINS Rend pyc
-            | Relseif E LINS IFELSE
-    '''
-    if(t.slice[4].type == 'Rend'):
-        t[0] = If(Cuerpo(t[3]),None,t[2],t.lineno(1),find_column(t.lineno(1),t.lexpos(1)))
-    elif(t.slice[4].type == 'Relse'):
-        t[0] = If(Cuerpo(t[3]),Cuerpo(t[5]),t[2],t.lineno(1),find_column(t.lineno(1),t.lexpos(1)))
-    elif(t.slice[4].type == 'IFELSE'):
-        t[0] = If(Cuerpo(t[3]),Cuerpo([t[4]]),t[2],t.lineno(1),find_column(t.lineno(1),t.lexpos(1)))
-    else:
-        t[0] = Eprimitivo("Error al intentar leer if",Tipo(-1),0)
-def p_PRINT(t):
-    '''PRINT :  PRINTTIPO parA LES parC pyc'''
-    if(t[1]==1):
-        t[0] = Print(t.lineno(1),find_column(t.lineno(1),t.lexpos(1)),t[3],True)
-    else:
-        t[0] = Print(t.lineno(1),find_column(t.lineno(1),t.lexpos(1)),t[3],False)
-
-def p_LES(t):
-    '''LES : LES coma E
-            | E'''
-
-    if(t.slice[1].type == 'LES'):
-        t[1].append(t[3])
-        t[0] = t[1]
-    elif(t.slice[1].type == 'E'):
-        t[0] = [t[1]]
-
-def p_PRINTTIPO(t):
-    '''PRINTTIPO : Rprint
-                    | Rprintln'''
-    if(t.slice[1].type == 'Rprint'):
-        t[0] = 0
-    else:
-        t[0] = 1
+def p_RETORNO(t):           
+    '''RETORNO : Rreturn pyc'''
+    t[0] = NodoOPT(t[1],"","","",7)
                  
 def p_E(t):
-    '''E :  E mas E
-          | E menos E
-          | E por E
-          | E div E
-          | E modular E
-          | E potencia E %prec potencia
-          | E meq E
-          | E mayq E
-          | E meiq E
-          | E mayiq E
-          | E iqiq E
-          | E noiq E
-          | E and E
-          | E or E
-          | not E %prec not
-          | menos E %prec unaria
-          | mas E %prec unaria
-          | PRIMITIVO'''
+    '''E :  PRIMITIVO mas PRIMITIVO
+          | PRIMITIVO menos PRIMITIVO
+          | PRIMITIVO por PRIMITIVO
+          | PRIMITIVO div PRIMITIVO
+          | PRIMITIVO meq PRIMITIVO
+          | PRIMITIVO mayq PRIMITIVO
+          | PRIMITIVO meiq PRIMITIVO
+          | PRIMITIVO mayiq PRIMITIVO
+          | PRIMITIVO iqiq PRIMITIVO
+          | PRIMITIVO noiq PRIMITIVO'''
 
-    if(t.slice[1].type == 'PRIMITIVO'):
-        t[0] = t[1]      
-    elif(t.slice[1].type == 'not'):
-        t[0] = Logica(None,t[2],2)
-    elif(t.slice[1].type == 'menos'):
-        t[0] = Unario(t[2],False)
+    if(t.slice[1].type == 'menos'):
+        t[0] = NodoOPT("","",t[2],t[1],1)
     elif(t.slice[1].type == 'mas'):
-        t[0] = Unario(t[2],True)
+        t[0] = NodoOPT("","",t[2],t[1],1)
     elif(t.slice[2].type == 'mas'):
-        t[0] = Suma(t[3],t[1])
+        t[0] = NodoOPT("",t[1],t[3],t[2],1)
     elif(t.slice[2].type == 'menos'):
-        t[0] = Resta(t[3],t[1])
+        t[0] = NodoOPT("",t[1],t[3],t[2],1)
     elif(t.slice[2].type == 'por'):
-        t[0] = Multiplicacion(t[3],t[1])
+        t[0] = NodoOPT("",t[1],t[3],t[2],1)
     elif(t.slice[2].type == 'div'):
-        t[0] = Division(t[3],t[1])
-    elif(t.slice[2].type == 'modular'):
-        t[0] = Modular(t[3],t[1])
-    elif(t.slice[2].type == 'potencia'):
-        t[0] = Potencia(t[3],t[1])
+        t[0] = NodoOPT("",t[1],t[3],t[2],1)
+    
     
     # 0:> 1:< 2:>= 3:<= 4:== 5:!=
     elif(t.slice[2].type == 'mayq'):
-        t[0] = Relacional(t[3],t[1],0)
+        t[0] = NodoOPT("",t[1],t[3],">",1)
     elif(t.slice[2].type == 'meq'):
-        t[0] = Relacional(t[3],t[1],1)
+        t[0] = NodoOPT("",t[1],t[3],str(t[2]),1)
     elif(t.slice[2].type == 'mayiq'):
-        t[0] = Relacional(t[3],t[1],2)
+        t[0] = NodoOPT("",t[1],t[3],t[2],1)
     elif(t.slice[2].type == 'meiq'):
-        t[0] = Relacional(t[3],t[1],3)
+        t[0] = NodoOPT("",t[1],t[3],t[2],1)
     elif(t.slice[2].type == 'iqiq'):
-        t[0] = Relacional(t[3],t[1],4)
+        t[0] = NodoOPT("",t[1],t[3],t[2],1)
     elif(t.slice[2].type == 'noiq'):
-        t[0] = Relacional(t[3],t[1],5)
-    elif(t.slice[2].type == 'and'):
-        t[0] = Logica(t[3],t[1],1)
-    elif(t.slice[2].type == 'or'):
-        t[0] = Logica(t[3],t[1],0)
-    else:
-        t[0] = Eprimitivo('error else produccion E',Tipo(-1),0)
+        t[0] = NodoOPT("",t[1],t[3],t[2],1)
+
 
 def p_Primitivo(t):
-    '''PRIMITIVO : parA E parC
-                    | entero
+    '''PRIMITIVO : entero
                     | decimal
-                    | cadenaS
-                    | cadenaC
-                    | Rtrue
-                    | Rfalse
                     | identificador
-                    | LLAMADA'''
+                    | menos entero
+                    | menos decimal'''
     if(t.slice[1].type == 'entero'):
-        t[0] = Eprimitivo(t[1],Tipo(1),0)
+        t[0] = t[1]
     elif(t.slice[1].type == 'decimal'):
-        t[0] = Eprimitivo(t[1],Tipo(2),0)
-    elif(t.slice[1].type == 'cadenaC'):
-        t[0] = Eprimitivo(t[1],Tipo(4),0)
-    elif(t.slice[1].type == 'cadenaS'):
-        t[0] = Eprimitivo(t[1],Tipo(5),0)
-    elif(t.slice[1].type == 'Rtrue'):
-        t[0] = Eprimitivo(1,Tipo(3),0)
-    elif(t.slice[1].type == 'Rfalse'):
-        t[0] = Eprimitivo(0,Tipo(3),0)
-    elif(t.slice[1].type == 'parA'):
-        t[0] = t[2]
+        t[0] = t[1]
     elif(t.slice[1].type == 'identificador'):
-        t[0] = Eid(t[1],t.lineno(1),find_column(t.lineno(0),t.lexpos(0)))
-    elif(t.slice[1].type == 'LLAMADA'):
         t[0] = t[1]
-
-def p_LLAMADA(t):
-    '''LLAMADA : identificador parA LPARL parC'''
-    t[0] = Llamada(t[1],t[3],t.lineno(0),find_column(t.lineno(0),t.lexpos(0)))
-
-def p_LPARL(t):
-    '''LPARL : LPARL coma E
-             | E
-             | empty'''
-    if(t.slice[1].type == "LPARL"):
-        t[1].append(t[3])
-        t[0] = t[1]
-    elif(t.slice[1].type == 'E'):
-        t[0] = [t[1]]
-    elif(t.slice[1].type == 'empty'):
-        t[0] = []
-
-def p_empty(p):
-     'empty :'
-     pass
-
+    elif(t.slice[1].type == 'menos'):
+        t[0] = "-"+str(t[2])
 def p_error(t):
     print(t)
-    lerrores.append(Error("Sintactico","No se esperaba el token: "+t.value,0,0))
+    lerrores.append("Sintactico, No se esperaba el token: "+str(t.value))
 
 from ply import yacc as yacc
 parser = yacc.yacc()
